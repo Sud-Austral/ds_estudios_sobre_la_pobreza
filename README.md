@@ -1,3 +1,4 @@
 
-Estudios sobre la pobreza
-![alt text](migrant-mother.jpg)
+# Estudios sobre la pobreza
+
+![migrant mother](migrant-mother.jpg)
