@@ -287,7 +287,14 @@ names(codigos_comunales)[1] <- "código"
 names(codigos_comunales)[2] <- "comuna"
 
 df_2006 = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
-df_2006
+head(df_2006,10)
+```
+
+
+```{r}
+a <- unique(df_2006$Pobreza)
+a <- as.data.frame(a)
+a
 ```
 
 
@@ -318,10 +325,15 @@ names(codigos_comunales)[1] <- "código"
 names(codigos_comunales)[2] <- "comuna"
 
 df_2009 = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
-df_2009
+
+head(df_2009,10)
 ```
 
-
+```{r}
+a <- unique(df_2009$Pobreza)
+a <- as.data.frame(a)
+a
+```
 
 # 2011
 
@@ -349,7 +361,14 @@ names(codigos_comunales)[1] <- "código"
 names(codigos_comunales)[2] <- "comuna"
 
 df_2011 = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
-df_2011
+head(df_2011,10)
+```
+
+
+```{r}
+a <- unique(df_2011$Pobreza)
+a <- as.data.frame(a)
+a
 ```
 
 
@@ -379,10 +398,14 @@ names(codigos_comunales)[1] <- "código"
 names(codigos_comunales)[2] <- "comuna"
 
 df_2013 = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
-df_2013
+head(df_2013,10)
 ```
 
-
+```{r}
+a <- unique(df_2013$Pobreza)
+a <- as.data.frame(a)
+a
+```
 
 # 2015
 
@@ -410,9 +433,14 @@ names(codigos_comunales)[1] <- "código"
 names(codigos_comunales)[2] <- "comuna"
 
 df_2015 = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
-df_2015
+head(df_2015,10)
 ```
 
+```{r}
+a <- unique(df_2015$Pobreza)
+a <- as.data.frame(a)
+a
+```
 
 # 2017
 
@@ -440,10 +468,14 @@ names(codigos_comunales)[1] <- "código"
 names(codigos_comunales)[2] <- "comuna"
 
 df_2017 = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
-df_2017
+head(df_2017,10)
 ```
 
-
+```{r}
+a <- unique(df_2017$Pobreza)
+a <- as.data.frame(a)
+a
+```
 
 
 # 2020
@@ -472,8 +504,15 @@ names(codigos_comunales)[1] <- "código"
 names(codigos_comunales)[2] <- "comuna"
 
 df_2020 = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
-df_2020
+head(df_2020,10)
 ```
+
+```{r}
+a <- unique(df_2020$Pobreza)
+a <- as.data.frame(a)
+a
+```
+
 
 
 ```{r}
@@ -483,18 +522,8 @@ union_final_pobreza <- rbind(df_2006, df_2009, df_2011, df_2013, df_2015, df_201
 
 
 ```{r}
-union_final_pobreza
+head(union_final_pobreza,10)
 ```
-
-
-
-```{r}
-unique(union_final_pobreza$Pobreza)
-```
-
-
-
-
 
 
 ```{r}
@@ -502,14 +531,18 @@ union_final_pobreza <- data.frame(lapply(union_final_pobreza, as.character), str
 ```
 
 ```{r}
-union_final_pobreza 
+head(union_final_pobreza,10)
 ```
+
+
+
 
 ```{r}
 union_final_pobreza$Pobreza[union_final_pobreza$Pobreza == "Indigente"]  <- "pobre extremo"
 union_final_pobreza$Pobreza[union_final_pobreza$Pobreza == "Pobreza extrema"]  <- "pobre extremo"
 union_final_pobreza$Pobreza[union_final_pobreza$Pobreza == "Pobres extremos"]  <- "pobre extremo"
 
+union_final_pobreza$Pobreza[union_final_pobreza$Pobreza == "Pobre no indigente"]  <- "pobre"
 union_final_pobreza$Pobreza[union_final_pobreza$Pobreza == "Pobre no Indigente"]  <- "pobre"
 union_final_pobreza$Pobreza[union_final_pobreza$Pobreza == "Pobre"]  <- "pobre"
 union_final_pobreza$Pobreza[union_final_pobreza$Pobreza == "Pobres no extremos"]  <- "pobre"
@@ -520,15 +553,12 @@ union_final_pobreza$Pobreza[union_final_pobreza$Pobreza == "Pobres no extremos"]
 ```
 
 ```{r}
-union_final_pobreza
+head(union_final_pobreza,10)
 ```
-
 
 ```{r}
 unique(union_final_pobreza$Pobreza)
 ```
-
-
 
 
 ```{r}
@@ -536,11 +566,50 @@ unique(union_final_pobreza$Etnia)
 ```
 
 
+
 ```{r}
-unique(union_final_pobreza$Sexo)
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Kawésqar (Alacalufes)"]  <- "Alacalufe"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Quechua" ]  <- "Quechua"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "No pertenece a ningún pueblo indígena"]  <- "NS/NR"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Aymara"]  <- "Aymara"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Mapuche"]  <- "Mapuche"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Atacameño (Likán Antai)" ]  <- "Atacameño"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Diaguita"]  <- "Diaguita"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Rapa Nui (Pascuense)" ]  <- "Pascuense"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Coya" ]  <- "Coya"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Yagán (Yámana)" ]  <- "Yagán"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Kawésqar"]  <- "Alacalufe"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Atacameño" ]  <- "Atacameño"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Rapa Nui"]  <- "Pascuense"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Yagán" ]  <- "Yagán"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "NS/NR"  ]  <- "NS/NR"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Kawashkar o Alacalufes"  ]  <- "Alacalufe"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Collas"]  <- "Coya"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Aimara" ]  <- "Aymara"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Rapa-Nui o Pascuenses"]  <- "Pascuense"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Atacameño (Likán-Antai)"]  <- "Atacameño"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Sin dato"]  <- "NS/NR"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Yámana o Yagán" ]  <- "Yagán"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "No pertenece a ninguno de estos pueblos indígenas" ]  <-  "NS/NR"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Atacameño (Likan-Antai)" ]  <- "Atacameño"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Chango" ]  <- "Chango"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "No sabe/no responde" ]  <- "NS/NR"
+union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Yagan"  ]  <- "Yagán"
+
+
+
 ```
 
 
+```{r}
+unique(union_final_pobreza$Etnia)
+```
+
+
+
+```{r}
+write_xlsx(union_final_pobreza,"union_final_pobreza.xlsx")
+```
 
 
 
@@ -629,16 +698,6 @@ Para caracterizar el valor de una observación se puede establecer una estructur
 
 
 
-# POBREZA
-
-Por categorias y por ingresos.
-
-## 3 Código R: Cálculos propios a partir de la Casen 2015
-
-
-
-Hemos obtenido una tabla corregida para el 2015: CASEN_2015_ds_final.rds, a la que le creamos factores de expansión para las observaciones que no lo tenian.
-
 
 
 
@@ -680,7 +739,7 @@ Hemos obtenido una tabla corregida para el 2015: CASEN_2015_ds_final.rds, a la q
 
 
 
-Calculamos las frecuencias por categoria de pobreza y por comuna por desviaciones standard 
+<!-- Calculamos las frecuencias por categoria de pobreza y por comuna por desviaciones standard  -->
 
 
 
@@ -690,43 +749,22 @@ Calculamos las frecuencias por categoria de pobreza y por comuna por desviacione
 
 
 
-```{r, warning=FALSE}
+<!-- ```{r, warning=FALSE} -->
 
-data <- read.spss("../../archivos_grandes/casen_2020.sav", to.data.frame=TRUE)
-```
-
-
-```{r}
-data
-```
+<!-- data <- read.spss("../../archivos_grandes/casen_2020.sav", to.data.frame=TRUE) -->
+<!-- ``` -->
 
 
-
-```{r}
-categorias_de_pobreza <-  unique(data$pobreza)
-categorias_de_pobreza
-```
+<!-- ```{r} -->
+<!-- data -->
+<!-- ``` -->
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-```{r}
-dataset2015_original  <- readRDS("../../archivos_grandes/casen_2015_c.rds")
-# Como humanos, preferimos trabajar con etiquetas que con códigos.
-dataset2015  <- as_factor(dataset2015_original, only_labelled = TRUE)
-```
+<!-- ```{r} -->
+<!-- categorias_de_pobreza <-  unique(data$pobreza) -->
+<!-- categorias_de_pobreza -->
+<!-- ``` -->
 
 
 
@@ -738,18 +776,39 @@ dataset2015  <- as_factor(dataset2015_original, only_labelled = TRUE)
 
 
 
-# Desigualdad
-
-## de los ingresos promedio y sd
-
-## ingreso autonomo DAU
-
-## Sobre el coeficiente de GINI
 
 
 
 
-<span style="color:red">The Gini coefficient is calculated on a scale of 0 to 1, with 1 being perfectly inequal, and 0 being perfectly equal.</span>
+
+<!-- ```{r} -->
+<!-- dataset2015_original  <- readRDS("../../archivos_grandes/casen_2015_c.rds") -->
+<!-- # Como humanos, preferimos trabajar con etiquetas que con códigos. -->
+<!-- dataset2015  <- as_factor(dataset2015_original, only_labelled = TRUE) -->
+<!-- ``` -->
+
+
+
+
+
+
+
+
+
+
+
+<!-- # Desigualdad -->
+
+<!-- ## de los ingresos promedio y sd -->
+
+<!-- ## ingreso autonomo DAU -->
+
+<!-- ## Sobre el coeficiente de GINI -->
+
+
+
+
+<!-- <span style="color:red">The Gini coefficient is calculated on a scale of 0 to 1, with 1 being perfectly inequal, and 0 being perfectly equal.</span> -->
 
 
 
@@ -911,12 +970,12 @@ dataset2015  <- as_factor(dataset2015_original, only_labelled = TRUE)
 
 
 
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
+<!-- <br> -->
+<!-- <br> -->
+<!-- <br> -->
+<!-- <br> -->
+<!-- <br> -->
+<!-- <br> -->
 
 
 
