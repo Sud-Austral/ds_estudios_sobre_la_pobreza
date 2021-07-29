@@ -1112,6 +1112,388 @@ Mayor)<br />
 </div>
 <div id="parte-ii-inmigrantes" class="section level2" number="2.2">
 <h2><span class="header-section-number">2.2</span> Parte II: Inmigrantes</h2>
+<div id="section-7" class="section level3" number="2.2.1">
+<h3><span class="header-section-number">2.2.1</span> 2011</h3>
+<p>r2p_cod: En que otro país vivía hace 5 años?</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a>ab <span class="ot">&lt;-</span> dataset2011</span>
+<span id="cb46-2"><a href="#cb46-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> ab<span class="sc">$</span>comuna</span>
+<span id="cb46-3"><a href="#cb46-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> ab<span class="sc">$</span>e1</span>
+<span id="cb46-4"><a href="#cb46-4" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> ab<span class="sc">$</span>corte</span>
+<span id="cb46-5"><a href="#cb46-5" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> ab<span class="sc">$</span>r2p_cod</span>
+<span id="cb46-6"><a href="#cb46-6" aria-hidden="true" tabindex="-1"></a>e <span class="ot">&lt;-</span> ab<span class="sc">$</span>sexo</span>
+<span id="cb46-7"><a href="#cb46-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-8"><a href="#cb46-8" aria-hidden="true" tabindex="-1"></a>cross_tab <span class="ot">=</span>  <span class="fu">xtabs</span>(ab<span class="sc">$</span>expc_full <span class="sc">~</span>  <span class="fu">unlist</span>(b)  <span class="sc">+</span> <span class="fu">unlist</span>(x) <span class="sc">+</span> <span class="fu">unlist</span>(c)  <span class="sc">+</span> <span class="fu">unlist</span>(d) <span class="sc">+</span> <span class="fu">unlist</span>(e),<span class="fu">aggregate</span>(ab<span class="sc">$</span>expc_full <span class="sc">~</span>   <span class="fu">unlist</span>(b) <span class="sc">+</span> <span class="fu">unlist</span>(x) <span class="sc">+</span> <span class="fu">unlist</span>(c) <span class="sc">+</span> <span class="fu">unlist</span>(d) <span class="sc">+</span> <span class="fu">unlist</span>(e) ,ab,mean))</span>
+<span id="cb46-9"><a href="#cb46-9" aria-hidden="true" tabindex="-1"></a>tabla <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(cross_tab)</span>
+<span id="cb46-10"><a href="#cb46-10" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span>tabla[<span class="sc">!</span>(tabla<span class="sc">$</span>Freq <span class="sc">==</span> <span class="dv">0</span>),]</span>
+<span id="cb46-11"><a href="#cb46-11" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>anio <span class="ot">&lt;-</span> <span class="st">&quot;2011&quot;</span></span>
+<span id="cb46-12"><a href="#cb46-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb46-13"><a href="#cb46-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;comuna&quot;</span>     </span>
+<span id="cb46-14"><a href="#cb46-14" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Alfabetismo&quot;</span></span>
+<span id="cb46-15"><a href="#cb46-15" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Pobreza&quot;</span></span>
+<span id="cb46-16"><a href="#cb46-16" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Origen&quot;</span></span>
+<span id="cb46-17"><a href="#cb46-17" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">5</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Sexo&quot;</span></span>
+<span id="cb46-18"><a href="#cb46-18" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Frecuencia&quot;</span></span>
+<span id="cb46-19"><a href="#cb46-19" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Año&quot;</span></span>
+<span id="cb46-20"><a href="#cb46-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-21"><a href="#cb46-21" aria-hidden="true" tabindex="-1"></a>codigos_comunales <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="st">&quot;../../archivos_grandes/codigos_comunales_2011-2017.rds&quot;</span>)</span>
+<span id="cb46-22"><a href="#cb46-22" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(codigos_comunales)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;código&quot;</span></span>
+<span id="cb46-23"><a href="#cb46-23" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(codigos_comunales)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;comuna&quot;</span></span>
+<span id="cb46-24"><a href="#cb46-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb46-25"><a href="#cb46-25" aria-hidden="true" tabindex="-1"></a>df_2011_m <span class="ot">=</span> <span class="fu">merge</span>( <span class="at">x =</span> d, <span class="at">y =</span> codigos_comunales, <span class="at">by =</span> <span class="st">&quot;comuna&quot;</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb46-26"><a href="#cb46-26" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_2011_m,<span class="dv">10</span>)</span></code></pre></div>
+<pre><code>##           comuna       Alfabetismo  Pobreza         Origen   Sexo Frecuencia
+## 1      Algarrobo Sí, lee y escribe No pobre         Suecia Hombre        225
+## 2      Algarrobo Sí, lee y escribe No pobre         Suecia  Mujer        225
+## 3          Alhué Sí, lee y escribe No pobre        Ecuador  Mujer         14
+## 4  Alto Hospicio Sí, lee y escribe No pobre      Argentina Hombre         26
+## 5  Alto Hospicio Sí, lee y escribe No pobre           Perú Hombre         73
+## 6  Alto Hospicio Sí, lee y escribe No pobre        Ecuador Hombre         32
+## 7  Alto Hospicio Sí, lee y escribe No pobre Estados Unidos Hombre         10
+## 8  Alto Hospicio Sí, lee y escribe No pobre        Bolivia Hombre        147
+## 9  Alto Hospicio Sí, lee y escribe No pobre        Bolivia  Mujer        225
+## 10 Alto Hospicio Sí, lee y escribe No pobre       Colombia  Mujer         75
+##     Año código
+## 1  2011  05602
+## 2  2011  05602
+## 3  2011  13502
+## 4  2011  01107
+## 5  2011  01107
+## 6  2011  01107
+## 7  2011  01107
+## 8  2011  01107
+## 9  2011  01107
+## 10 2011  01107</code></pre>
+</div>
+<div id="section-8" class="section level3" number="2.2.2">
+<h3><span class="header-section-number">2.2.2</span> 2013</h3>
+<p>r2_p_cod: ¿en qué país vivía hace 5 años?</p>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a>ab <span class="ot">&lt;-</span> dataset2013</span>
+<span id="cb48-2"><a href="#cb48-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> ab<span class="sc">$</span>comuna</span>
+<span id="cb48-3"><a href="#cb48-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> ab<span class="sc">$</span>e1</span>
+<span id="cb48-4"><a href="#cb48-4" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> ab<span class="sc">$</span>pobreza_MN</span>
+<span id="cb48-5"><a href="#cb48-5" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> ab<span class="sc">$</span>r2_p_cod</span>
+<span id="cb48-6"><a href="#cb48-6" aria-hidden="true" tabindex="-1"></a>e <span class="ot">&lt;-</span> ab<span class="sc">$</span>sexo</span>
+<span id="cb48-7"><a href="#cb48-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-8"><a href="#cb48-8" aria-hidden="true" tabindex="-1"></a>cross_tab <span class="ot">=</span>  <span class="fu">xtabs</span>(ab<span class="sc">$</span>expc <span class="sc">~</span>  <span class="fu">unlist</span>(b) <span class="sc">+</span> <span class="fu">unlist</span>(x) <span class="sc">+</span> <span class="fu">unlist</span>(c)  <span class="sc">+</span> <span class="fu">unlist</span>(d) <span class="sc">+</span> <span class="fu">unlist</span>(e),<span class="fu">aggregate</span>(ab<span class="sc">$</span>expc <span class="sc">~</span>   <span class="fu">unlist</span>(b)  <span class="sc">+</span> <span class="fu">unlist</span>(x) <span class="sc">+</span> <span class="fu">unlist</span>(c) <span class="sc">+</span> <span class="fu">unlist</span>(d) <span class="sc">+</span> <span class="fu">unlist</span>(e) ,ab,mean))</span>
+<span id="cb48-9"><a href="#cb48-9" aria-hidden="true" tabindex="-1"></a>tabla <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(cross_tab)</span>
+<span id="cb48-10"><a href="#cb48-10" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span>tabla[<span class="sc">!</span>(tabla<span class="sc">$</span>Freq <span class="sc">==</span> <span class="dv">0</span>),]</span>
+<span id="cb48-11"><a href="#cb48-11" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>anio <span class="ot">&lt;-</span> <span class="st">&quot;2013&quot;</span></span>
+<span id="cb48-12"><a href="#cb48-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb48-13"><a href="#cb48-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;comuna&quot;</span>   </span>
+<span id="cb48-14"><a href="#cb48-14" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Alfabetismo&quot;</span></span>
+<span id="cb48-15"><a href="#cb48-15" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Pobreza&quot;</span></span>
+<span id="cb48-16"><a href="#cb48-16" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Origen&quot;</span></span>
+<span id="cb48-17"><a href="#cb48-17" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">5</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Sexo&quot;</span></span>
+<span id="cb48-18"><a href="#cb48-18" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Frecuencia&quot;</span></span>
+<span id="cb48-19"><a href="#cb48-19" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Año&quot;</span></span>
+<span id="cb48-20"><a href="#cb48-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-21"><a href="#cb48-21" aria-hidden="true" tabindex="-1"></a>codigos_comunales <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="st">&quot;../../archivos_grandes/codigos_comunales_2011-2017.rds&quot;</span>)</span>
+<span id="cb48-22"><a href="#cb48-22" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(codigos_comunales)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;código&quot;</span></span>
+<span id="cb48-23"><a href="#cb48-23" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(codigos_comunales)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;comuna&quot;</span></span>
+<span id="cb48-24"><a href="#cb48-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb48-25"><a href="#cb48-25" aria-hidden="true" tabindex="-1"></a>df_2013_m <span class="ot">=</span> <span class="fu">merge</span>( <span class="at">x =</span> d, <span class="at">y =</span> codigos_comunales, <span class="at">by =</span> <span class="st">&quot;comuna&quot;</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb48-26"><a href="#cb48-26" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_2013_m,<span class="dv">10</span>)</span></code></pre></div>
+<pre><code>##           comuna       Alfabetismo            Pobreza   Origen   Sexo
+## 1          Alhué Sí, lee y escribe Pobres no extremos   Grecia Hombre
+## 2          Alhué Sí, lee y escribe Pobres no extremos   Grecia  Mujer
+## 3  Alto Hospicio      No, sólo lee          No pobres  Bolivia Hombre
+## 4  Alto Hospicio Sí, lee y escribe          No pobres Colombia  Mujer
+## 5  Alto Hospicio Sí, lee y escribe          No pobres Pakistán Hombre
+## 6  Alto Hospicio Sí, lee y escribe          No pobres  Bolivia Hombre
+## 7  Alto Hospicio Sí, lee y escribe          No pobres Colombia Hombre
+## 8  Alto Hospicio Sí, lee y escribe Pobres no extremos Colombia Hombre
+## 9  Alto Hospicio Sí, lee y escribe Pobres no extremos     Perú Hombre
+## 10 Alto Hospicio Sí, lee y escribe          No pobres  Bolivia  Mujer
+##    Frecuencia  Año código
+## 1          17 2013  13502
+## 2          17 2013  13502
+## 3          38 2013  01107
+## 4          21 2013  01107
+## 5          21 2013  01107
+## 6         329 2013  01107
+## 7          21 2013  01107
+## 8          36 2013  01107
+## 9          25 2013  01107
+## 10        402 2013  01107</code></pre>
+</div>
+<div id="section-9" class="section level3" number="2.2.3">
+<h3><span class="header-section-number">2.2.3</span> 2015</h3>
+<p>r2espp_cod: ¿En qué país vivía hace 5 años?</p>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a>ab <span class="ot">&lt;-</span> dataset2015</span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> ab<span class="sc">$</span>comuna</span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> ab<span class="sc">$</span>e1</span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> ab<span class="sc">$</span>pobreza</span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> ab<span class="sc">$</span>r2espp_cod</span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>e <span class="ot">&lt;-</span> ab<span class="sc">$</span>sexo</span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>cross_tab <span class="ot">=</span>  <span class="fu">xtabs</span>(ab<span class="sc">$</span>expc_todas <span class="sc">~</span>  <span class="fu">unlist</span>(b) <span class="sc">+</span> <span class="fu">unlist</span>(x) <span class="sc">+</span> <span class="fu">unlist</span>(c)  <span class="sc">+</span> <span class="fu">unlist</span>(d) <span class="sc">+</span> <span class="fu">unlist</span>(e),<span class="fu">aggregate</span>(ab<span class="sc">$</span>expc_todas <span class="sc">~</span>   <span class="fu">unlist</span>(b) <span class="sc">+</span> <span class="fu">unlist</span>(x) <span class="sc">+</span> <span class="fu">unlist</span>(c) <span class="sc">+</span> <span class="fu">unlist</span>(d) <span class="sc">+</span> <span class="fu">unlist</span>(e) ,ab,mean))</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>tabla <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(cross_tab)</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span>tabla[<span class="sc">!</span>(tabla<span class="sc">$</span>Freq <span class="sc">==</span> <span class="dv">0</span>),]</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>anio <span class="ot">&lt;-</span> <span class="st">&quot;2015&quot;</span></span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;comuna&quot;</span>     </span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Alfabetismo&quot;</span></span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Pobreza&quot;</span></span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Origen&quot;</span></span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">5</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Sexo&quot;</span></span>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Frecuencia&quot;</span></span>
+<span id="cb50-19"><a href="#cb50-19" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Año&quot;</span></span>
+<span id="cb50-20"><a href="#cb50-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-21"><a href="#cb50-21" aria-hidden="true" tabindex="-1"></a>codigos_comunales <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="st">&quot;../../archivos_grandes/codigos_comunales_2011-2017.rds&quot;</span>)</span>
+<span id="cb50-22"><a href="#cb50-22" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(codigos_comunales)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;código&quot;</span></span>
+<span id="cb50-23"><a href="#cb50-23" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(codigos_comunales)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;comuna&quot;</span></span>
+<span id="cb50-24"><a href="#cb50-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb50-25"><a href="#cb50-25" aria-hidden="true" tabindex="-1"></a>df_2015_m <span class="ot">=</span> <span class="fu">merge</span>( <span class="at">x =</span> d, <span class="at">y =</span> codigos_comunales, <span class="at">by =</span> <span class="st">&quot;comuna&quot;</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb50-26"><a href="#cb50-26" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_2015_m,<span class="dv">10</span>)</span></code></pre></div>
+<pre><code>##           comuna       Alfabetismo            Pobreza    Origen   Sexo
+## 1      Algarrobo Sí, lee y escribe          No pobres  Colombia Hombre
+## 2  Alto Hospicio Sí, lee y escribe          No pobres      Perú Hombre
+## 3  Alto Hospicio Sí, lee y escribe          No pobres   Bolivia Hombre
+## 4  Alto Hospicio Sí, lee y escribe Pobres no extremos  Colombia  Mujer
+## 5  Alto Hospicio Sí, lee y escribe          No pobres      Perú  Mujer
+## 6  Alto Hospicio       No, ninguno          No pobres   Bolivia Hombre
+## 7  Alto Hospicio Sí, lee y escribe          No pobres Dinamarca  Mujer
+## 8  Alto Hospicio Sí, lee y escribe          No pobres   Bolivia  Mujer
+## 9  Alto Hospicio Sí, lee y escribe Pobres no extremos   Bolivia  Mujer
+## 10 Alto Hospicio Sí, lee y escribe    Pobres extremos  Colombia Hombre
+##    Frecuencia  Año código
+## 1          64 2015  05602
+## 2         100 2015  01107
+## 3         279 2015  01107
+## 4          22 2015  01107
+## 5          65 2015  01107
+## 6          69 2015  01107
+## 7          45 2015  01107
+## 8         279 2015  01107
+## 9          29 2015  01107
+## 10         40 2015  01107</code></pre>
+</div>
+<div id="section-10" class="section level3" number="2.2.4">
+<h3><span class="header-section-number">2.2.4</span> 2017</h3>
+<p>r2_p_cod: ¿En qué país vivía hace 5 años (2012)?</p>
+<div class="sourceCode" id="cb52"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb52-1"><a href="#cb52-1" aria-hidden="true" tabindex="-1"></a>ab <span class="ot">&lt;-</span> dataset2017</span>
+<span id="cb52-2"><a href="#cb52-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> ab<span class="sc">$</span>comuna</span>
+<span id="cb52-3"><a href="#cb52-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> ab<span class="sc">$</span>e1</span>
+<span id="cb52-4"><a href="#cb52-4" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> ab<span class="sc">$</span>pobreza</span>
+<span id="cb52-5"><a href="#cb52-5" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> ab<span class="sc">$</span>r2_p_cod</span>
+<span id="cb52-6"><a href="#cb52-6" aria-hidden="true" tabindex="-1"></a>e <span class="ot">&lt;-</span> ab<span class="sc">$</span>sexo</span>
+<span id="cb52-7"><a href="#cb52-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-8"><a href="#cb52-8" aria-hidden="true" tabindex="-1"></a>cross_tab <span class="ot">=</span>  <span class="fu">xtabs</span>(ab<span class="sc">$</span>expc <span class="sc">~</span>  <span class="fu">unlist</span>(b)  <span class="sc">+</span> <span class="fu">unlist</span>(x) <span class="sc">+</span> <span class="fu">unlist</span>(c)  <span class="sc">+</span> <span class="fu">unlist</span>(d) <span class="sc">+</span> <span class="fu">unlist</span>(e),<span class="fu">aggregate</span>(ab<span class="sc">$</span>expc <span class="sc">~</span>   <span class="fu">unlist</span>(b)  <span class="sc">+</span> <span class="fu">unlist</span>(x) <span class="sc">+</span> <span class="fu">unlist</span>(c) <span class="sc">+</span> <span class="fu">unlist</span>(d) <span class="sc">+</span> <span class="fu">unlist</span>(e) ,ab,mean))</span>
+<span id="cb52-9"><a href="#cb52-9" aria-hidden="true" tabindex="-1"></a>tabla <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(cross_tab)</span>
+<span id="cb52-10"><a href="#cb52-10" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span>tabla[<span class="sc">!</span>(tabla<span class="sc">$</span>Freq <span class="sc">==</span> <span class="dv">0</span>),]</span>
+<span id="cb52-11"><a href="#cb52-11" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>anio <span class="ot">&lt;-</span> <span class="st">&quot;2017&quot;</span></span>
+<span id="cb52-12"><a href="#cb52-12" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb52-13"><a href="#cb52-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;comuna&quot;</span>  </span>
+<span id="cb52-14"><a href="#cb52-14" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Alfabetismo&quot;</span></span>
+<span id="cb52-15"><a href="#cb52-15" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Pobreza&quot;</span></span>
+<span id="cb52-16"><a href="#cb52-16" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Origen&quot;</span></span>
+<span id="cb52-17"><a href="#cb52-17" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">5</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Sexo&quot;</span></span>
+<span id="cb52-18"><a href="#cb52-18" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Frecuencia&quot;</span></span>
+<span id="cb52-19"><a href="#cb52-19" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Año&quot;</span></span>
+<span id="cb52-20"><a href="#cb52-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-21"><a href="#cb52-21" aria-hidden="true" tabindex="-1"></a>codigos_comunales <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="st">&quot;../../archivos_grandes/codigos_comunales_2011-2017.rds&quot;</span>)</span>
+<span id="cb52-22"><a href="#cb52-22" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(codigos_comunales)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;código&quot;</span></span>
+<span id="cb52-23"><a href="#cb52-23" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(codigos_comunales)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;comuna&quot;</span></span>
+<span id="cb52-24"><a href="#cb52-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb52-25"><a href="#cb52-25" aria-hidden="true" tabindex="-1"></a>df_2017_m <span class="ot">=</span> <span class="fu">merge</span>( <span class="at">x =</span> d, <span class="at">y =</span> codigos_comunales, <span class="at">by =</span> <span class="st">&quot;comuna&quot;</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb52-26"><a href="#cb52-26" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_2017_m,<span class="dv">10</span>)</span></code></pre></div>
+<pre><code>##           comuna       Alfabetismo            Pobreza    Origen   Sexo
+## 1      Algarrobo Sí, lee y escribe          No pobres  Colombia  Mujer
+## 2          Alhué Sí, lee y escribe    Pobres extremos     Haití  Mujer
+## 3          Alhué Sí, lee y escribe    Pobres extremos     Haití Hombre
+## 4  Alto Hospicio Sí, lee y escribe    Pobres extremos Venezuela Hombre
+## 5  Alto Hospicio Sí, lee y escribe          No pobres    España Hombre
+## 6  Alto Hospicio Sí, lee y escribe          No pobres   Ecuador  Mujer
+## 7  Alto Hospicio Sí, lee y escribe          No pobres Venezuela Hombre
+## 8  Alto Hospicio Sí, lee y escribe          No pobres  Colombia  Mujer
+## 9  Alto Hospicio Sí, lee y escribe    Pobres extremos   Bolivia  Mujer
+## 10 Alto Hospicio Sí, lee y escribe Pobres no extremos   Bolivia  Mujer
+##    Frecuencia  Año código
+## 1         188 2017  05602
+## 2          25 2017  13502
+## 3          75 2017  13502
+## 4          98 2017  01107
+## 5          69 2017  01107
+## 6          44 2017  01107
+## 7          92 2017  01107
+## 8         147 2017  01107
+## 9          33 2017  01107
+## 10        115 2017  01107</code></pre>
+</div>
+<div id="section-11" class="section level3" number="2.2.5">
+<h3><span class="header-section-number">2.2.5</span> 2020</h3>
+<p>r2_p_cod: r2pais. País donde vivía hace 5 años (código)</p>
+<div class="sourceCode" id="cb54"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a>ab <span class="ot">&lt;-</span> dataset2020</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> ab<span class="sc">$</span>comuna</span>
+<span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> ab<span class="sc">$</span>e6a</span>
+<span id="cb54-4"><a href="#cb54-4" aria-hidden="true" tabindex="-1"></a>c <span class="ot">&lt;-</span> ab<span class="sc">$</span>pobreza</span>
+<span id="cb54-5"><a href="#cb54-5" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span> ab<span class="sc">$</span>r2_p_cod</span>
+<span id="cb54-6"><a href="#cb54-6" aria-hidden="true" tabindex="-1"></a>e <span class="ot">&lt;-</span> ab<span class="sc">$</span>sexo</span>
+<span id="cb54-7"><a href="#cb54-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-8"><a href="#cb54-8" aria-hidden="true" tabindex="-1"></a>cross_tab <span class="ot">=</span>  <span class="fu">xtabs</span>(ab<span class="sc">$</span>expc <span class="sc">~</span>  <span class="fu">unlist</span>(b)  <span class="sc">+</span> <span class="fu">unlist</span>(x) <span class="sc">+</span> <span class="fu">unlist</span>(c)  <span class="sc">+</span> <span class="fu">unlist</span>(d) <span class="sc">+</span> <span class="fu">unlist</span>(e),<span class="fu">aggregate</span>(ab<span class="sc">$</span>expc <span class="sc">~</span>   <span class="fu">unlist</span>(b)  <span class="sc">+</span> <span class="fu">unlist</span>(x) <span class="sc">+</span> <span class="fu">unlist</span>(c) <span class="sc">+</span> <span class="fu">unlist</span>(d) <span class="sc">+</span> <span class="fu">unlist</span>(e) ,ab,mean))</span>
+<span id="cb54-9"><a href="#cb54-9" aria-hidden="true" tabindex="-1"></a>tabla <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(cross_tab)</span>
+<span id="cb54-10"><a href="#cb54-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-11"><a href="#cb54-11" aria-hidden="true" tabindex="-1"></a>d <span class="ot">&lt;-</span>tabla[<span class="sc">!</span>(tabla<span class="sc">$</span>Freq <span class="sc">==</span> <span class="dv">0</span>),]</span>
+<span id="cb54-12"><a href="#cb54-12" aria-hidden="true" tabindex="-1"></a>d<span class="sc">$</span>anio <span class="ot">&lt;-</span> <span class="st">&quot;2020&quot;</span></span>
+<span id="cb54-13"><a href="#cb54-13" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb54-14"><a href="#cb54-14" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;comuna&quot;</span>  </span>
+<span id="cb54-15"><a href="#cb54-15" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Alfabetismo&quot;</span></span>
+<span id="cb54-16"><a href="#cb54-16" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">3</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Pobreza&quot;</span></span>
+<span id="cb54-17"><a href="#cb54-17" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">4</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Origen&quot;</span></span>
+<span id="cb54-18"><a href="#cb54-18" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">5</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Sexo&quot;</span></span>
+<span id="cb54-19"><a href="#cb54-19" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">6</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Frecuencia&quot;</span></span>
+<span id="cb54-20"><a href="#cb54-20" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(d)[<span class="dv">7</span>] <span class="ot">&lt;-</span> <span class="st">&quot;Año&quot;</span></span>
+<span id="cb54-21"><a href="#cb54-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-22"><a href="#cb54-22" aria-hidden="true" tabindex="-1"></a>codigos_comunales <span class="ot">&lt;-</span> <span class="fu">readRDS</span>(<span class="at">file =</span> <span class="st">&quot;../../archivos_grandes/codigos_comunales_2011-2017.rds&quot;</span>)</span>
+<span id="cb54-23"><a href="#cb54-23" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(codigos_comunales)[<span class="dv">1</span>] <span class="ot">&lt;-</span> <span class="st">&quot;código&quot;</span></span>
+<span id="cb54-24"><a href="#cb54-24" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(codigos_comunales)[<span class="dv">2</span>] <span class="ot">&lt;-</span> <span class="st">&quot;comuna&quot;</span></span>
+<span id="cb54-25"><a href="#cb54-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb54-26"><a href="#cb54-26" aria-hidden="true" tabindex="-1"></a>df_2020_m <span class="ot">=</span> <span class="fu">merge</span>( <span class="at">x =</span> d, <span class="at">y =</span> codigos_comunales, <span class="at">by =</span> <span class="st">&quot;comuna&quot;</span>, <span class="at">all.x =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb54-27"><a href="#cb54-27" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df_2020_m,<span class="dv">10</span>)</span></code></pre></div>
+<pre><code>##           comuna                                    Alfabetismo         Pobreza
+## 1      Algarrobo           Educación Media Científico-Humanista       No pobres
+## 2      Algarrobo           Educación Media Científico-Humanista Pobres extremos
+## 3      Algarrobo           Educación Media Científico-Humanista Pobres extremos
+## 4      Algarrobo   Profesional Completo (Carreras 4 ó más años) Pobres extremos
+## 5      Algarrobo           Educación Media Científico-Humanista       No pobres
+## 6      Algarrobo                               Educación Básica Pobres extremos
+## 7          Alhué           Educación Media Científico-Humanista       No pobres
+## 8          Alhué   Profesional Completo (Carreras 4 ó más años)       No pobres
+## 9          Alhué                               Educación Básica       No pobres
+## 10 Alto Hospicio Profesional Incompleto (Carreras 4 ó más años)       No pobres
+##            Origen   Sexo Frecuencia  Año código
+## 1  Estados Unidos  Mujer         40 2020  05602
+## 2       Venezuela Hombre         54 2020  05602
+## 3       Venezuela  Mujer         54 2020  05602
+## 4       Venezuela Hombre         27 2020  05602
+## 5       Venezuela Hombre         50 2020  05602
+## 6       Venezuela Hombre         54 2020  05602
+## 7       Argentina  Mujer        122 2020  13502
+## 8         Bolivia  Mujer        122 2020  13502
+## 9         Bolivia  Mujer        244 2020  13502
+## 10       Colombia  Mujer         34 2020  01107</code></pre>
+<p>Hay que arreglar alfabetismo para 2020:</p>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" aria-hidden="true" tabindex="-1"></a>df_2020_m <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">lapply</span>(df_2020_m, as.character), <span class="at">stringsAsFactors=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<p>Realizamos nuestra asignación:</p>
+<div class="sourceCode" id="cb57"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Educación Media Científico-Humanista&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;Sí&quot;</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Educación Especial (Diferencial)&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;No&quot;</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Educación Básica&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;Sí&quot;</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Técnico Nivel Superior Incompleto (Carreras 1 a 3 años)&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;Sí&quot;</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Técnico Nivel Superior Completo (Carreras 1 a 3 años)&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;Sí&quot;</span></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Técnica Comercial, Industrial o Normalista (Sistema Antiguo)&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;Sí&quot;</span></span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Humanidades (Sistema Antiguo)&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;Sí&quot;</span></span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Profesional Incompleto (Carreras 4 ó más años)&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;Sí&quot;</span></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Educación Media Técnica Profesional&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;Sí&quot;</span></span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Profesional Completo (Carreras 4 ó más años)&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;Sí&quot;</span></span>
+<span id="cb57-11"><a href="#cb57-11" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Jardín Infantil (Medio menor y Medio mayor)&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;No&quot;</span></span>
+<span id="cb57-12"><a href="#cb57-12" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Nunca asistió&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;No&quot;</span></span>
+<span id="cb57-13"><a href="#cb57-13" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Prekínder / Kínder (Transición menor y Transición Mayor)&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;No&quot;</span></span>
+<span id="cb57-14"><a href="#cb57-14" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Postgrado Incompleto&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;Sí&quot;</span></span>
+<span id="cb57-15"><a href="#cb57-15" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Sala cuna&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;No&quot;</span></span>
+<span id="cb57-16"><a href="#cb57-16" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Primaria o Preparatoria (Sistema antiguo)&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;Sí&quot;</span></span>
+<span id="cb57-17"><a href="#cb57-17" aria-hidden="true" tabindex="-1"></a>df_2020_m<span class="sc">$</span>Alfabetismo[df_2020_m<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Postgrado Completo&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;Sí&quot;</span></span>
+<span id="cb57-18"><a href="#cb57-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb57-19"><a href="#cb57-19" aria-hidden="true" tabindex="-1"></a><span class="co"># Hacemos que el campo char de expc sea numerico:</span></span>
+<span id="cb57-20"><a href="#cb57-20" aria-hidden="true" tabindex="-1"></a>df_2020_mexpc <span class="ot">&lt;-</span> <span class="fu">as.numeric</span>(df_2020_m<span class="sc">$</span>expc)</span></code></pre></div>
+<div class="sourceCode" id="cb58"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb58-1"><a href="#cb58-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">unique</span>(df_2020_m<span class="sc">$</span>Alfabetismo)</span>
+<span id="cb58-2"><a href="#cb58-2" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(a)</span>
+<span id="cb58-3"><a href="#cb58-3" aria-hidden="true" tabindex="-1"></a>a</span></code></pre></div>
+<pre><code>##    a
+## 1 Sí
+## 2 No</code></pre>
+<div class="sourceCode" id="cb60"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb60-1"><a href="#cb60-1" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra <span class="ot">&lt;-</span> <span class="fu">rbind</span>(df_2011_m, df_2013_m, df_2015_m, df_2017_m, df_2020_m)</span></code></pre></div>
+<div class="sourceCode" id="cb61"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(union_final_pobreza_migra,<span class="dv">10</span>)</span></code></pre></div>
+<pre><code>##           comuna       Alfabetismo  Pobreza         Origen   Sexo Frecuencia
+## 1      Algarrobo Sí, lee y escribe No pobre         Suecia Hombre        225
+## 2      Algarrobo Sí, lee y escribe No pobre         Suecia  Mujer        225
+## 3          Alhué Sí, lee y escribe No pobre        Ecuador  Mujer         14
+## 4  Alto Hospicio Sí, lee y escribe No pobre      Argentina Hombre         26
+## 5  Alto Hospicio Sí, lee y escribe No pobre           Perú Hombre         73
+## 6  Alto Hospicio Sí, lee y escribe No pobre        Ecuador Hombre         32
+## 7  Alto Hospicio Sí, lee y escribe No pobre Estados Unidos Hombre         10
+## 8  Alto Hospicio Sí, lee y escribe No pobre        Bolivia Hombre        147
+## 9  Alto Hospicio Sí, lee y escribe No pobre        Bolivia  Mujer        225
+## 10 Alto Hospicio Sí, lee y escribe No pobre       Colombia  Mujer         75
+##     Año código
+## 1  2011  05602
+## 2  2011  05602
+## 3  2011  13502
+## 4  2011  01107
+## 5  2011  01107
+## 6  2011  01107
+## 7  2011  01107
+## 8  2011  01107
+## 9  2011  01107
+## 10 2011  01107</code></pre>
+</div>
+<div id="homologamos-categorias" class="section level3" number="2.2.6">
+<h3><span class="header-section-number">2.2.6</span> Homologamos categorias</h3>
+<div class="sourceCode" id="cb63"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">lapply</span>(union_final_pobreza_migra, as.character), <span class="at">stringsAsFactors=</span><span class="cn">FALSE</span>)</span></code></pre></div>
+<div id="alfabetismo" class="section level4" number="2.2.6.1">
+<h4><span class="header-section-number">2.2.6.1</span> Alfabetismo</h4>
+<div class="sourceCode" id="cb64"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb64-1"><a href="#cb64-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">unique</span>(union_final_pobreza_migra<span class="sc">$</span>Alfabetismo)</span>
+<span id="cb64-2"><a href="#cb64-2" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(a)</span>
+<span id="cb64-3"><a href="#cb64-3" aria-hidden="true" tabindex="-1"></a>a</span></code></pre></div>
+<pre><code>##                   a
+## 1 Sí, lee y escribe
+## 2      No, sólo lee
+## 3  No, sólo escribe
+## 4       No, ninguno
+## 5  No sabe/responde
+## 6                Sí
+## 7                No</code></pre>
+<p>Según la ONU, una persona analfabeta es aquella que no puede ni leer ni escribir un breve y simple mensaje relacionado con su vida diaria.</p>
+<blockquote>
+<p><a href="https://es.wikipedia.org/wiki/Analfabetismo" class="uri">https://es.wikipedia.org/wiki/Analfabetismo</a></p>
+</blockquote>
+<div class="sourceCode" id="cb66"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb66-1"><a href="#cb66-1" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Alfabetismo[union_final_pobreza_migra<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;No&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;No&quot;</span></span>
+<span id="cb66-2"><a href="#cb66-2" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Alfabetismo[union_final_pobreza_migra<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Sí&quot;</span> ]  <span class="ot">&lt;-</span> <span class="st">&quot;Sí&quot;</span></span>
+<span id="cb66-3"><a href="#cb66-3" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Alfabetismo[union_final_pobreza_migra<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;No sabe /Sin dato&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;NS/NR/SD&quot;</span></span>
+<span id="cb66-4"><a href="#cb66-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-5"><a href="#cb66-5" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Alfabetismo[union_final_pobreza_migra<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;No, sólo lee&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;No&quot;</span></span>
+<span id="cb66-6"><a href="#cb66-6" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Alfabetismo[union_final_pobreza_migra<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;Sí, lee y escribe&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;Sí&quot;</span></span>
+<span id="cb66-7"><a href="#cb66-7" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Alfabetismo[union_final_pobreza_migra<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;No, ninguno&quot;</span> ]  <span class="ot">&lt;-</span> <span class="st">&quot;No&quot;</span></span>
+<span id="cb66-8"><a href="#cb66-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb66-9"><a href="#cb66-9" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Alfabetismo[union_final_pobreza_migra<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;No, sólo escribe&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;No&quot;</span></span>
+<span id="cb66-10"><a href="#cb66-10" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Alfabetismo[union_final_pobreza_migra<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;NS/NR&quot;</span> ]  <span class="ot">&lt;-</span> <span class="st">&quot;NS/NR/SD&quot;</span></span>
+<span id="cb66-11"><a href="#cb66-11" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Alfabetismo[union_final_pobreza_migra<span class="sc">$</span>Alfabetismo <span class="sc">==</span> <span class="st">&quot;No sabe/responde&quot;</span> ]  <span class="ot">&lt;-</span> <span class="st">&quot;NS/NR/SD&quot;</span></span></code></pre></div>
+<p>NS/NR/SD: No sabe, no responde o sin dato.</p>
+<div class="sourceCode" id="cb67"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb67-1"><a href="#cb67-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">unique</span>(union_final_pobreza_migra<span class="sc">$</span>Alfabetismo)</span>
+<span id="cb67-2"><a href="#cb67-2" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(a)</span>
+<span id="cb67-3"><a href="#cb67-3" aria-hidden="true" tabindex="-1"></a>a</span></code></pre></div>
+<pre><code>##          a
+## 1       Sí
+## 2       No
+## 3 NS/NR/SD</code></pre>
+</div>
+<div id="pobreza" class="section level4" number="2.2.6.2">
+<h4><span class="header-section-number">2.2.6.2</span> Pobreza</h4>
+<div class="sourceCode" id="cb69"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb69-1"><a href="#cb69-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">unique</span>(union_final_pobreza_migra<span class="sc">$</span>Pobreza)</span>
+<span id="cb69-2"><a href="#cb69-2" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(a)</span>
+<span id="cb69-3"><a href="#cb69-3" aria-hidden="true" tabindex="-1"></a>a</span></code></pre></div>
+<pre><code>##                    a
+## 1           No pobre
+## 2              Pobre
+## 3    Pobreza extrema
+## 4 Pobres no extremos
+## 5          No pobres
+## 6    Pobres extremos</code></pre>
+<div class="sourceCode" id="cb71"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb71-1"><a href="#cb71-1" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Pobreza[union_final_pobreza_migra<span class="sc">$</span>Pobreza <span class="sc">==</span> <span class="st">&quot;No pobre&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;no pobre&quot;</span></span>
+<span id="cb71-2"><a href="#cb71-2" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Pobreza[union_final_pobreza_migra<span class="sc">$</span>Pobreza <span class="sc">==</span> <span class="st">&quot;Pobre&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;pobre&quot;</span></span>
+<span id="cb71-3"><a href="#cb71-3" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Pobreza[union_final_pobreza_migra<span class="sc">$</span>Pobreza <span class="sc">==</span> <span class="st">&quot;Pobreza extrema&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;pobre extremo&quot;</span></span>
+<span id="cb71-4"><a href="#cb71-4" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Pobreza[union_final_pobreza_migra<span class="sc">$</span>Pobreza <span class="sc">==</span> <span class="st">&quot;Pobres no extremos&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;no pobre&quot;</span></span>
+<span id="cb71-5"><a href="#cb71-5" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Pobreza[union_final_pobreza_migra<span class="sc">$</span>Pobreza <span class="sc">==</span> <span class="st">&quot;No pobres&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;no pobre&quot;</span></span>
+<span id="cb71-6"><a href="#cb71-6" aria-hidden="true" tabindex="-1"></a>union_final_pobreza_migra<span class="sc">$</span>Pobreza[union_final_pobreza_migra<span class="sc">$</span>Pobreza <span class="sc">==</span> <span class="st">&quot;Pobres extremos&quot;</span>]  <span class="ot">&lt;-</span> <span class="st">&quot;pobre extremo&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb72"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb72-1"><a href="#cb72-1" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">unique</span>(union_final_pobreza_migra<span class="sc">$</span>Pobreza)</span>
+<span id="cb72-2"><a href="#cb72-2" aria-hidden="true" tabindex="-1"></a>a <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(a)</span>
+<span id="cb72-3"><a href="#cb72-3" aria-hidden="true" tabindex="-1"></a>a</span></code></pre></div>
+<pre><code>##               a
+## 1      no pobre
+## 2         pobre
+## 3 pobre extremo</code></pre>
+<div class="sourceCode" id="cb74"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb74-1"><a href="#cb74-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_xlsx</span>(union_final_pobreza_migra,<span class="st">&quot;union_final_pobreza_migra.xlsx&quot;</span>)</span></code></pre></div>
+</div>
+</div>
 </div>
 </div>
 <div id="la-desigualdad." class="section level1" number="3">
@@ -1163,10 +1545,10 @@ Mayor)<br />
 3. qaut: Quintil autónomo nacional<br />
 4. qautr: Quintil autónomo regional
 </font></p>
-<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dataset2011</span></span></code></pre></div>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dataset2013</span></span></code></pre></div>
-<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dataset2015</span></span></code></pre></div>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dataset2017</span></span></code></pre></div>
+<div class="sourceCode" id="cb75"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb75-1"><a href="#cb75-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dataset2011</span></span></code></pre></div>
+<div class="sourceCode" id="cb76"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb76-1"><a href="#cb76-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dataset2013</span></span></code></pre></div>
+<div class="sourceCode" id="cb77"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dataset2015</span></span></code></pre></div>
+<div class="sourceCode" id="cb78"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dataset2017</span></span></code></pre></div>
 <!-- Calculamos las frecuencias por categoria de pobreza y por comuna por desviaciones standard  -->
 <!-- ```{r, warning=FALSE} -->
 <!-- data <- read.spss("../../archivos_grandes/casen_2020.sav", to.data.frame=TRUE) -->

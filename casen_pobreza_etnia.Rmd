@@ -443,9 +443,6 @@ dataset2020_x <- dataset2020[,-c(1:6,8:16,18:44,46:64,66:587,589:617,619:655)]
 head(dataset2020_x,10)
 ```
 
-
-
-
 Observemos las categorias del campo e6a:
 
 
@@ -454,6 +451,7 @@ a <- unique(dataset2020_x$e6a)
 a <- as.data.frame(a)
 a
 ```
+
 Transformemos de factores a carácter:
 
 ```{r}
@@ -461,7 +459,6 @@ dataset2020_x <- data.frame(lapply(dataset2020_x, as.character), stringsAsFactor
 ```
 
 Realizamos nuestra asignación:
-
 
 ```{r, warning=FALSE}
 dataset2020_x$e6a[dataset2020_x$e6a == "Educación Media Científico-Humanista"]  <- "Sí"
@@ -628,8 +625,6 @@ Según la ONU, una persona analfabeta es aquella que no puede ni leer ni escribi
 
 >https://es.wikipedia.org/wiki/Analfabetismo
 
-
-
 ```{r}
 union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "No"]  <- "No"
 union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "Sí" ]  <- "Sí"
@@ -642,11 +637,7 @@ union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "No, ninguno"
 union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "No, sólo escribe"]  <- "No"
 union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "NS/NR" ]  <- "NS/NR/SD"
 union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "No sabe/responde" ]  <- "NS/NR/SD"
-
-
-
 ```
-
 
 NS/NR/SD: No sabe, no responde o sin dato.
 
@@ -675,6 +666,299 @@ write_xlsx(union_final_pobreza,"union_final_pobreza_etnia.xlsx")
 
 
 
+
+### 2011
+
+r2p_cod: En que otro país vivía hace 5 años?
+
+```{r}
+ab <- dataset2011
+b <- ab$comuna
+x <- ab$e1
+c <- ab$corte
+d <- ab$r2p_cod
+e <- ab$sexo
+
+cross_tab =  xtabs(ab$expc_full ~  unlist(b)  + unlist(x) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc_full ~   unlist(b) + unlist(x) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
+tabla <- as.data.frame(cross_tab)
+d <-tabla[!(tabla$Freq == 0),]
+d$anio <- "2011"
+    
+names(d)[1] <- "comuna"     
+names(d)[2] <- "Alfabetismo"
+names(d)[3] <- "Pobreza"
+names(d)[4] <- "Origen"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Frecuencia"
+names(d)[7] <- "Año"
+
+codigos_comunales <- readRDS(file = "../../archivos_grandes/codigos_comunales_2011-2017.rds")
+names(codigos_comunales)[1] <- "código"
+names(codigos_comunales)[2] <- "comuna"
+
+df_2011_m = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
+head(df_2011_m,10)
+```
+
+### 2013
+
+
+r2_p_cod: ¿en qué país vivía hace 5 años?
+
+
+```{r}
+ab <- dataset2013
+b <- ab$comuna
+x <- ab$e1
+c <- ab$pobreza_MN
+d <- ab$r2_p_cod
+e <- ab$sexo
+
+cross_tab =  xtabs(ab$expc ~  unlist(b) + unlist(x) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc ~   unlist(b)  + unlist(x) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
+tabla <- as.data.frame(cross_tab)
+d <-tabla[!(tabla$Freq == 0),]
+d$anio <- "2013"
+    
+names(d)[1] <- "comuna"   
+names(d)[2] <- "Alfabetismo"
+names(d)[3] <- "Pobreza"
+names(d)[4] <- "Origen"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Frecuencia"
+names(d)[7] <- "Año"
+
+codigos_comunales <- readRDS(file = "../../archivos_grandes/codigos_comunales_2011-2017.rds")
+names(codigos_comunales)[1] <- "código"
+names(codigos_comunales)[2] <- "comuna"
+
+df_2013_m = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
+head(df_2013_m,10)
+```
+
+### 2015
+
+r2espp_cod:  ¿En qué país vivía hace 5 años? 
+
+```{r}
+ab <- dataset2015
+b <- ab$comuna
+x <- ab$e1
+c <- ab$pobreza
+d <- ab$r2espp_cod
+e <- ab$sexo
+
+cross_tab =  xtabs(ab$expc_todas ~  unlist(b) + unlist(x) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc_todas ~   unlist(b) + unlist(x) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
+tabla <- as.data.frame(cross_tab)
+d <-tabla[!(tabla$Freq == 0),]
+d$anio <- "2015"
+    
+names(d)[1] <- "comuna"     
+names(d)[2] <- "Alfabetismo"
+names(d)[3] <- "Pobreza"
+names(d)[4] <- "Origen"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Frecuencia"
+names(d)[7] <- "Año"
+
+codigos_comunales <- readRDS(file = "../../archivos_grandes/codigos_comunales_2011-2017.rds")
+names(codigos_comunales)[1] <- "código"
+names(codigos_comunales)[2] <- "comuna"
+
+df_2015_m = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
+head(df_2015_m,10)
+```
+
+### 2017
+
+r2_p_cod: ¿En qué país vivía hace 5 años (2012)?
+
+
+```{r}
+ab <- dataset2017
+b <- ab$comuna
+x <- ab$e1
+c <- ab$pobreza
+d <- ab$r2_p_cod
+e <- ab$sexo
+
+cross_tab =  xtabs(ab$expc ~  unlist(b)  + unlist(x) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc ~   unlist(b)  + unlist(x) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
+tabla <- as.data.frame(cross_tab)
+d <-tabla[!(tabla$Freq == 0),]
+d$anio <- "2017"
+    
+names(d)[1] <- "comuna"  
+names(d)[2] <- "Alfabetismo"
+names(d)[3] <- "Pobreza"
+names(d)[4] <- "Origen"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Frecuencia"
+names(d)[7] <- "Año"
+
+codigos_comunales <- readRDS(file = "../../archivos_grandes/codigos_comunales_2011-2017.rds")
+names(codigos_comunales)[1] <- "código"
+names(codigos_comunales)[2] <- "comuna"
+
+df_2017_m = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
+head(df_2017_m,10)
+```
+
+### 2020
+
+r2_p_cod: r2pais. País donde vivía hace 5 años (código)
+
+```{r}
+ab <- dataset2020
+b <- ab$comuna
+x <- ab$e6a
+c <- ab$pobreza
+d <- ab$r2_p_cod
+e <- ab$sexo
+
+cross_tab =  xtabs(ab$expc ~  unlist(b)  + unlist(x) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc ~   unlist(b)  + unlist(x) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
+tabla <- as.data.frame(cross_tab)
+
+d <-tabla[!(tabla$Freq == 0),]
+d$anio <- "2020"
+    
+names(d)[1] <- "comuna"  
+names(d)[2] <- "Alfabetismo"
+names(d)[3] <- "Pobreza"
+names(d)[4] <- "Origen"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Frecuencia"
+names(d)[7] <- "Año"
+
+codigos_comunales <- readRDS(file = "../../archivos_grandes/codigos_comunales_2011-2017.rds")
+names(codigos_comunales)[1] <- "código"
+names(codigos_comunales)[2] <- "comuna"
+
+df_2020_m = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
+head(df_2020_m,10)
+```
+
+Hay que arreglar alfabetismo para 2020:
+
+
+```{r}
+df_2020_m <- data.frame(lapply(df_2020_m, as.character), stringsAsFactors=FALSE)
+```
+
+Realizamos nuestra asignación:
+
+```{r, warning=FALSE}
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Educación Media Científico-Humanista"]  <- "Sí"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Educación Especial (Diferencial)"]  <- "No"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Educación Básica"]  <- "Sí"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Técnico Nivel Superior Incompleto (Carreras 1 a 3 años)"]  <- "Sí"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Técnico Nivel Superior Completo (Carreras 1 a 3 años)"]  <- "Sí"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Técnica Comercial, Industrial o Normalista (Sistema Antiguo)"]  <- "Sí"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Humanidades (Sistema Antiguo)"]  <- "Sí"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Profesional Incompleto (Carreras 4 ó más años)"]  <- "Sí"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Educación Media Técnica Profesional"]  <- "Sí"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Profesional Completo (Carreras 4 ó más años)"]  <- "Sí"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Jardín Infantil (Medio menor y Medio mayor)"]  <- "No"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Nunca asistió"]  <- "No"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Prekínder / Kínder (Transición menor y Transición Mayor)"]  <- "No"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Postgrado Incompleto"]  <- "Sí"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Sala cuna"]  <- "No"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Primaria o Preparatoria (Sistema antiguo)"]  <- "Sí"
+df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Postgrado Completo"]  <- "Sí"
+
+# Hacemos que el campo char de expc sea numerico:
+df_2020_mexpc <- as.numeric(df_2020_m$expc)
+```
+
+```{r}
+a <- unique(df_2020_m$Alfabetismo)
+a <- as.data.frame(a)
+a
+```
+
+
+```{r}
+union_final_pobreza_migra <- rbind(df_2011_m, df_2013_m, df_2015_m, df_2017_m, df_2020_m)
+```
+
+
+
+```{r}
+head(union_final_pobreza_migra,10)
+```
+
+
+### Homologamos categorias
+
+```{r}
+union_final_pobreza_migra <- data.frame(lapply(union_final_pobreza_migra, as.character), stringsAsFactors=FALSE)
+```
+
+#### Alfabetismo
+
+```{r}
+a <- unique(union_final_pobreza_migra$Alfabetismo)
+a <- as.data.frame(a)
+a
+```
+
+
+
+Según la ONU, una persona analfabeta es aquella que no puede ni leer ni escribir un breve y simple mensaje relacionado con su vida diaria.
+
+>https://es.wikipedia.org/wiki/Analfabetismo
+
+```{r}
+union_final_pobreza_migra$Alfabetismo[union_final_pobreza_migra$Alfabetismo == "No"]  <- "No"
+union_final_pobreza_migra$Alfabetismo[union_final_pobreza_migra$Alfabetismo == "Sí" ]  <- "Sí"
+union_final_pobreza_migra$Alfabetismo[union_final_pobreza_migra$Alfabetismo == "No sabe /Sin dato"]  <- "NS/NR/SD"
+
+union_final_pobreza_migra$Alfabetismo[union_final_pobreza_migra$Alfabetismo == "No, sólo lee"]  <- "No"
+union_final_pobreza_migra$Alfabetismo[union_final_pobreza_migra$Alfabetismo == "Sí, lee y escribe"]  <- "Sí"
+union_final_pobreza_migra$Alfabetismo[union_final_pobreza_migra$Alfabetismo == "No, ninguno" ]  <- "No"
+
+union_final_pobreza_migra$Alfabetismo[union_final_pobreza_migra$Alfabetismo == "No, sólo escribe"]  <- "No"
+union_final_pobreza_migra$Alfabetismo[union_final_pobreza_migra$Alfabetismo == "NS/NR" ]  <- "NS/NR/SD"
+union_final_pobreza_migra$Alfabetismo[union_final_pobreza_migra$Alfabetismo == "No sabe/responde" ]  <- "NS/NR/SD"
+```
+
+NS/NR/SD: No sabe, no responde o sin dato.
+
+```{r}
+a <- unique(union_final_pobreza_migra$Alfabetismo)
+a <- as.data.frame(a)
+a
+```
+
+
+#### Pobreza
+
+```{r}
+a <- unique(union_final_pobreza_migra$Pobreza)
+a <- as.data.frame(a)
+a
+```
+
+
+```{r}
+union_final_pobreza_migra$Pobreza[union_final_pobreza_migra$Pobreza == "No pobre"]  <- "no pobre"
+union_final_pobreza_migra$Pobreza[union_final_pobreza_migra$Pobreza == "Pobre"]  <- "pobre"
+union_final_pobreza_migra$Pobreza[union_final_pobreza_migra$Pobreza == "Pobreza extrema"]  <- "pobre extremo"
+union_final_pobreza_migra$Pobreza[union_final_pobreza_migra$Pobreza == "Pobres no extremos"]  <- "no pobre"
+union_final_pobreza_migra$Pobreza[union_final_pobreza_migra$Pobreza == "No pobres"]  <- "no pobre"
+union_final_pobreza_migra$Pobreza[union_final_pobreza_migra$Pobreza == "Pobres extremos"]  <- "pobre extremo"
+```
+
+
+```{r}
+a <- unique(union_final_pobreza_migra$Pobreza)
+a <- as.data.frame(a)
+a
+```
+
+
+
+```{r}
+write_xlsx(union_final_pobreza_migra,"union_final_pobreza_migra.xlsx")
+```
 
 
 
