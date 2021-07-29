@@ -67,93 +67,10 @@ oldw <- getOption("warn")
 options(warn = -1)
 ```
 
-```{r, warning=FALSE}
-dataset2006 <- readRDS("../../archivos_grandes/casen_2006_c.rds")
-# Como humanos, preferimos trabajar con etiquetas que con códigos.
-dataset2006  <- as_factor(dataset2006, only_labelled = TRUE)
-
-dataset2009  <- readRDS("../../archivos_grandes/casen_2009_c.rds")
-# Como humanos, preferimos trabajar con etiquetas que con códigos.
-dataset2009  <- as_factor(dataset2009, only_labelled = TRUE)
-
-dataset2011  <- readRDS("../../archivos_grandes/casen_2011_c.rds")
-# Como humanos, preferimos trabajar con etiquetas que con códigos.
-dataset2011  <- as_factor(dataset2011, only_labelled = TRUE)
-
-dataset2013  <- readRDS("../../archivos_grandes/casen_2013_c.rds")
-# Como humanos, preferimos trabajar con etiquetas que con códigos.
-dataset2013  <- as_factor(dataset2013, only_labelled = TRUE)
-
-dataset2015 <- readRDS("../../archivos_grandes/casen_2015_c.rds")
-# Como humanos, preferimos trabajar con etiquetas que con códigos.
-dataset2015  <- as_factor(dataset2015, only_labelled = TRUE)
-
-dataset2017  <- readRDS("../../archivos_grandes/casen_2017_c.rds")
-# Como humanos, preferimos trabajar con etiquetas que con códigos.
-dataset2017  <- as_factor(dataset2017, only_labelled = TRUE)
-
-dataset2020 <- read.spss("../../archivos_grandes/casen_2020.sav", to.data.frame=TRUE)
-
-```
-
-
-```{r}
-unique(dataset2006$CORTE)
-```
-
-```{r}
-unique(dataset2006$T4)
-```
-
-```{r}
-unique(dataset2006$SEXO)
-```
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-```{r}
-unique(dataset2009$CORTE)
-```
-
-```{r}
-unique(dataset2011$corte)
-```
-
-```{r}
-unique(dataset2013$pobreza_MN)
-```
-
-```{r}
-unique(dataset2015$pobreza)
-```
-
-```{r}
-unique(dataset2017$pobreza)
-```
-
-```{r}
-unique(dataset2020$pobreza)
-```
-
-
-
-
-
 
 # Aspectos conceptuales
 
-## La metodología de estimación de la Pobreza y la actualización del 2013.
+## La metodología de estimación de la Pobreza en la Casen.
 
 Desde la década de 1980 y hasta la actualidad, en Chile la medición de la situación de
 pobreza de los hogares se ha realizado utilizando una metodología basada en ingresos.
@@ -185,7 +102,6 @@ El año 2013 se preparó e implementó el levantamiento de la encuesta Casen 201
 parte de este proceso, se ha llevado a cabo una actualización y perfeccionamiento de la
 metodología de medición de la pobreza.
 
-#  Pobreza
 
 ## Pobreza absoluta versus pobreza relativa. Aspectos técnicos.
 
@@ -224,9 +140,6 @@ Alkire y Foster (2007) constituye uno de los principales esfuerzos desarrollados
 al caso de Chile."
 
 
-
-
-
 ## Pobreza por ingresos
 
 Todas las Casen (años 2006, 2009, 2011, 2013, 2015 y 2017)  contienen una sola variable que discrimina la categoría de pobreza en la que cada observación es clasificada. Las categorías son tres, las que si bien se denominan de distinto modo a partir del año 2013, identifican lo mismo:
@@ -258,29 +171,66 @@ Desde el 2013:
 |                  | No pobre       	| No pobre     	   | No pobre  	 | No pobres   	     | No pobres          | No pobres                           |    No pobres  |       no pobre            |
 
 
+## Pobreza multidimensional
+
+|                            |   2013        	     |  2015              |   2017	           |
+|---	                       |---	                 |---                 |---     	           |
+|Variable                    | **pobreza_multi**        | **pobreza_multi_4d**   | **pobreza_multi_4d**   |
+|                            |                      | **pobreza_multi_5d**   | **pobreza_multi_5d**   |
+|---	                       |---	                 |---                 |---   	           |
+|Categorías                  | no pobre             | no pobre           | no pobre           |
+|                            | pobre                | pobre              | pobre              |
+
+La variable: pobreza_multi_5d,  "Situación de pobreza multidimensional" considera la dimensión: "Entorno y Redes".
 
 
 
-# 2006
+
+
+# Estudio sobre etnia e inmigrantes
+
+## Parte I: Etnia
+
+```{r, warning=FALSE, message=FALSE}
+# Como humanos, preferimos trabajar con etiquetas que con códigos.
+dataset2006 <- readRDS("../../archivos_grandes/casen_2006_c.rds")
+dataset2006  <- as_factor(dataset2006, only_labelled = TRUE)
+dataset2009  <- readRDS("../../archivos_grandes/casen_2009_c.rds")
+dataset2009  <- as_factor(dataset2009, only_labelled = TRUE)
+dataset2011  <- readRDS("../../archivos_grandes/casen_2011_c.rds")
+dataset2011  <- as_factor(dataset2011, only_labelled = TRUE)
+dataset2013  <- readRDS("../../archivos_grandes/casen_2013_c.rds")
+dataset2013  <- as_factor(dataset2013, only_labelled = TRUE)
+dataset2015 <- readRDS("../../archivos_grandes/casen_2015_c.rds")
+dataset2015  <- as_factor(dataset2015, only_labelled = TRUE)
+dataset2017  <- readRDS("../../archivos_grandes/casen_2017_c.rds")
+dataset2017  <- as_factor(dataset2017, only_labelled = TRUE)
+dataset2020 <- read.spss("../../archivos_grandes/casen_2020.sav", to.data.frame=TRUE)
+```
+
+
+### 2006
 
 ```{r}
 ab <- dataset2006
 b <- ab$COMUNA
+x <- ab$E1
 c <- ab$CORTE
 d <- ab$T4
 e <- ab$SEXO
 
-cross_tab =  xtabs(ab$EXPC ~  unlist(b) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$EXPC ~   unlist(b) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
+cross_tab =  xtabs(ab$EXPC ~  unlist(b)  + unlist(x) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$EXPC ~   unlist(b)  + unlist(x) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
 tabla <- as.data.frame(cross_tab)
 d <-tabla[!(tabla$Freq == 0),]
 d$anio <- "2006"
     
-names(d)[1] <- "comuna"     
-names(d)[2] <- "Pobreza"
-names(d)[3] <- "Etnia"
-names(d)[4] <- "Sexo"
-names(d)[5] <- "Frecuencia"
-names(d)[6] <- "Año"
+names(d)[1] <- "comuna"   
+names(d)[2] <- "Alfabetismo"
+names(d)[3] <- "Pobreza"
+names(d)[4] <- "Etnia"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Frecuencia"
+names(d)[7] <- "Año"
 
 codigos_comunales <- readRDS(file = "../../archivos_grandes/codigos_comunales_2006.rds")
 names(codigos_comunales)[1] <- "código"
@@ -290,35 +240,28 @@ df_2006 = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
 head(df_2006,10)
 ```
 
-
-```{r}
-a <- unique(df_2006$Pobreza)
-a <- as.data.frame(a)
-a
-```
-
-
-
-# 2009
+### 2009
 
 ```{r}
 ab <- dataset2009
 b <- ab$COMUNA
+x <- ab$E1
 c <- ab$CORTE
 d <- ab$T5
 e <- ab$SEXO
 
-cross_tab =  xtabs(ab$EXPC ~  unlist(b) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$EXPC ~   unlist(b) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
+cross_tab =  xtabs(ab$EXPC ~  unlist(b)  + unlist(x) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$EXPC ~   unlist(b) + unlist(x)  + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
 tabla <- as.data.frame(cross_tab)
 d <-tabla[!(tabla$Freq == 0),]
 d$anio <- "2009"
     
 names(d)[1] <- "comuna"     
-names(d)[2] <- "Pobreza"
-names(d)[3] <- "Etnia"
-names(d)[4] <- "Sexo"
-names(d)[5] <- "Frecuencia"
-names(d)[6] <- "Año"
+names(d)[2] <- "Alfabetismo"
+names(d)[3] <- "Pobreza"
+names(d)[4] <- "Etnia"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Frecuencia"
+names(d)[7] <- "Año"
 
 codigos_comunales <- readRDS(file = "../../archivos_grandes/codigos_comunales_2009.rds")
 names(codigos_comunales)[1] <- "código"
@@ -329,32 +272,29 @@ df_2009 = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
 head(df_2009,10)
 ```
 
-```{r}
-a <- unique(df_2009$Pobreza)
-a <- as.data.frame(a)
-a
-```
 
-# 2011
+### 2011
 
 ```{r}
 ab <- dataset2011
 b <- ab$comuna
+x <- ab$e1
 c <- ab$corte
 d <- ab$r6
 e <- ab$sexo
 
-cross_tab =  xtabs(ab$expc_full ~  unlist(b) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc_full ~   unlist(b) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
+cross_tab =  xtabs(ab$expc_full ~  unlist(b)  + unlist(x) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc_full ~   unlist(b) + unlist(x) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
 tabla <- as.data.frame(cross_tab)
 d <-tabla[!(tabla$Freq == 0),]
 d$anio <- "2011"
     
 names(d)[1] <- "comuna"     
-names(d)[2] <- "Pobreza"
-names(d)[3] <- "Etnia"
-names(d)[4] <- "Sexo"
-names(d)[5] <- "Frecuencia"
-names(d)[6] <- "Año"
+names(d)[2] <- "Alfabetismo"
+names(d)[3] <- "Pobreza"
+names(d)[4] <- "Etnia"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Frecuencia"
+names(d)[7] <- "Año"
 
 codigos_comunales <- readRDS(file = "../../archivos_grandes/codigos_comunales_2011-2017.rds")
 names(codigos_comunales)[1] <- "código"
@@ -365,33 +305,29 @@ head(df_2011,10)
 ```
 
 
-```{r}
-a <- unique(df_2011$Pobreza)
-a <- as.data.frame(a)
-a
-```
 
-
-# 2013
+### 2013
 
 ```{r}
 ab <- dataset2013
 b <- ab$comuna
+x <- ab$e1
 c <- ab$pobreza_MN
 d <- ab$r6
 e <- ab$sexo
 
-cross_tab =  xtabs(ab$expc ~  unlist(b) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc ~   unlist(b) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
+cross_tab =  xtabs(ab$expc ~  unlist(b) + unlist(x) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc ~   unlist(b)  + unlist(x) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
 tabla <- as.data.frame(cross_tab)
 d <-tabla[!(tabla$Freq == 0),]
 d$anio <- "2013"
     
-names(d)[1] <- "comuna"     
-names(d)[2] <- "Pobreza"
-names(d)[3] <- "Etnia"
-names(d)[4] <- "Sexo"
-names(d)[5] <- "Frecuencia"
-names(d)[6] <- "Año"
+names(d)[1] <- "comuna"   
+names(d)[2] <- "Alfabetismo"
+names(d)[3] <- "Pobreza"
+names(d)[4] <- "Etnia"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Frecuencia"
+names(d)[7] <- "Año"
 
 codigos_comunales <- readRDS(file = "../../archivos_grandes/codigos_comunales_2011-2017.rds")
 names(codigos_comunales)[1] <- "código"
@@ -401,32 +337,32 @@ df_2013 = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
 head(df_2013,10)
 ```
 
-```{r}
-a <- unique(df_2013$Pobreza)
-a <- as.data.frame(a)
-a
-```
 
-# 2015
+
+
+
+### 2015
 
 ```{r}
 ab <- dataset2015
 b <- ab$comuna
+x <- ab$e1
 c <- ab$pobreza
 d <- ab$r3
 e <- ab$sexo
 
-cross_tab =  xtabs(ab$expc_todas ~  unlist(b) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc_todas ~   unlist(b) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
+cross_tab =  xtabs(ab$expc_todas ~  unlist(b) + unlist(x) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc_todas ~   unlist(b) + unlist(x) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
 tabla <- as.data.frame(cross_tab)
 d <-tabla[!(tabla$Freq == 0),]
 d$anio <- "2015"
     
 names(d)[1] <- "comuna"     
-names(d)[2] <- "Pobreza"
-names(d)[3] <- "Etnia"
-names(d)[4] <- "Sexo"
-names(d)[5] <- "Frecuencia"
-names(d)[6] <- "Año"
+names(d)[2] <- "Alfabetismo"
+names(d)[3] <- "Pobreza"
+names(d)[4] <- "Etnia"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Frecuencia"
+names(d)[7] <- "Año"
 
 codigos_comunales <- readRDS(file = "../../archivos_grandes/codigos_comunales_2011-2017.rds")
 names(codigos_comunales)[1] <- "código"
@@ -436,32 +372,33 @@ df_2015 = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
 head(df_2015,10)
 ```
 
-```{r}
-a <- unique(df_2015$Pobreza)
-a <- as.data.frame(a)
-a
-```
 
-# 2017
+
+
+
+
+### 2017
 
 ```{r}
 ab <- dataset2017
 b <- ab$comuna
+x <- ab$e1
 c <- ab$pobreza
 d <- ab$r3
 e <- ab$sexo
 
-cross_tab =  xtabs(ab$expc ~  unlist(b) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc ~   unlist(b) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
+cross_tab =  xtabs(ab$expc ~  unlist(b)  + unlist(x) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc ~   unlist(b)  + unlist(x) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
 tabla <- as.data.frame(cross_tab)
 d <-tabla[!(tabla$Freq == 0),]
 d$anio <- "2017"
     
-names(d)[1] <- "comuna"     
-names(d)[2] <- "Pobreza"
-names(d)[3] <- "Etnia"
-names(d)[4] <- "Sexo"
-names(d)[5] <- "Frecuencia"
-names(d)[6] <- "Año"
+names(d)[1] <- "comuna"  
+names(d)[2] <- "Alfabetismo"
+names(d)[3] <- "Pobreza"
+names(d)[4] <- "Etnia"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Frecuencia"
+names(d)[7] <- "Año"
 
 codigos_comunales <- readRDS(file = "../../archivos_grandes/codigos_comunales_2011-2017.rds")
 names(codigos_comunales)[1] <- "código"
@@ -471,33 +408,105 @@ df_2017 = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
 head(df_2017,10)
 ```
 
+
+### 2020
+
+
+Por una extraña razón, siendo que más de medio millón de chilenos son analfabetos:
+
+>https://www.cronicadigital.cl/2020/09/08/mas-de-medio-millon-de-chilenos-son-analfabetos/
+
+la encuenta Casen del 2020 no incluye ésta pregunta fundamental. Es entonces que debemos idear un criterio que nos permita superar ésta deficiencia,
+para tener un patrón de comparación para los 14 años de Casen.
+
+
+![](educ.png)
+
+En Chile, los niños aprenden a leer en promedio en segundo básico. 
+
+Entonces vamos a reemplazar la variable e6a por una llamada **alfabetismo** en la que vamos a asumir que los individuos que llegaron a las siguientes 5 categorías *No* saben leer:
+
+1 Nunca asistió\
+2 Sala cuna \
+3 Jardín Infantil (Medio menor y Medio mayor)\
+4 Prekínder / Kínder (Transición menor y Transición 
+Mayor)\
+5 Educación Especial (Diferencial)
+
+Por otro lado construiremos otra categoría llamada *Sí* que incluirá a todas las demás:
+
+#### Rescatemos sólo los campos de interés de la Casen 2020:
+
+
 ```{r}
-a <- unique(df_2017$Pobreza)
-a <- as.data.frame(a)
-a
+dataset2020_x <- dataset2020[,-c(1:6,8:16,18:44,46:64,66:587,589:617,619:655)]
+head(dataset2020_x,10)
 ```
 
 
-# 2020
+
+
+Observemos las categorias del campo e6a:
+
 
 ```{r}
-ab <- dataset2020
+a <- unique(dataset2020_x$e6a)
+a <- as.data.frame(a)
+a
+```
+Transformemos de factores a carácter:
+
+```{r}
+dataset2020_x <- data.frame(lapply(dataset2020_x, as.character), stringsAsFactors=FALSE)
+```
+
+Realizamos nuestra asignación:
+
+
+```{r, warning=FALSE}
+dataset2020_x$e6a[dataset2020_x$e6a == "Educación Media Científico-Humanista"]  <- "Sí"
+dataset2020_x$e6a[dataset2020_x$e6a == "Educación Especial (Diferencial)"]  <- "No"
+dataset2020_x$e6a[dataset2020_x$e6a == "Educación Básica"]  <- "Sí"
+dataset2020_x$e6a[dataset2020_x$e6a == "Técnico Nivel Superior Incompleto (Carreras 1 a 3 años)"]  <- "Sí"
+dataset2020_x$e6a[dataset2020_x$e6a == "Técnico Nivel Superior Completo (Carreras 1 a 3 años)"]  <- "Sí"
+dataset2020_x$e6a[dataset2020_x$e6a == "Técnica Comercial, Industrial o Normalista (Sistema Antiguo)"]  <- "Sí"
+dataset2020_x$e6a[dataset2020_x$e6a == "Humanidades (Sistema Antiguo)"]  <- "Sí"
+dataset2020_x$e6a[dataset2020_x$e6a == "Profesional Incompleto (Carreras 4 ó más años)"]  <- "Sí"
+dataset2020_x$e6a[dataset2020_x$e6a == "Educación Media Técnica Profesional"]  <- "Sí"
+dataset2020_x$e6a[dataset2020_x$e6a == "Profesional Completo (Carreras 4 ó más años)"]  <- "Sí"
+dataset2020_x$e6a[dataset2020_x$e6a == "Jardín Infantil (Medio menor y Medio mayor)"]  <- "No"
+dataset2020_x$e6a[dataset2020_x$e6a == "Nunca asistió"]  <- "No"
+dataset2020_x$e6a[dataset2020_x$e6a == "Prekínder / Kínder (Transición menor y Transición Mayor)"]  <- "No"
+dataset2020_x$e6a[dataset2020_x$e6a == "Postgrado Incompleto"]  <- "Sí"
+dataset2020_x$e6a[dataset2020_x$e6a == "Sala cuna"]  <- "No"
+dataset2020_x$e6a[dataset2020_x$e6a == "Primaria o Preparatoria (Sistema antiguo)"]  <- "Sí"
+dataset2020_x$e6a[dataset2020_x$e6a == "Postgrado Completo"]  <- "Sí"
+
+# Hacemos que el campo char de expc sea numerico:
+dataset2020_x$expc <- as.numeric(dataset2020_x$expc)
+```
+
+```{r}
+ab <- dataset2020_x
 b <- ab$comuna
+x <- ab$e6a
 c <- ab$pobreza
 d <- ab$r3
 e <- ab$sexo
 
-cross_tab =  xtabs(ab$expc ~  unlist(b) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc ~   unlist(b) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
+cross_tab =  xtabs(ab$expc ~  unlist(b)  + unlist(x) + unlist(c)  + unlist(d) + unlist(e),aggregate(ab$expc ~   unlist(b)  + unlist(x) + unlist(c) + unlist(d) + unlist(e) ,ab,mean))
 tabla <- as.data.frame(cross_tab)
+
 d <-tabla[!(tabla$Freq == 0),]
 d$anio <- "2020"
     
-names(d)[1] <- "comuna"     
-names(d)[2] <- "Pobreza"
-names(d)[3] <- "Etnia"
-names(d)[4] <- "Sexo"
-names(d)[5] <- "Frecuencia"
-names(d)[6] <- "Año"
+names(d)[1] <- "comuna"  
+names(d)[2] <- "Alfabetismo"
+names(d)[3] <- "Pobreza"
+names(d)[4] <- "Etnia"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Frecuencia"
+names(d)[7] <- "Año"
 
 codigos_comunales <- readRDS(file = "../../archivos_grandes/codigos_comunales_2011-2017.rds")
 names(codigos_comunales)[1] <- "código"
@@ -505,12 +514,6 @@ names(codigos_comunales)[2] <- "comuna"
 
 df_2020 = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
 head(df_2020,10)
-```
-
-```{r}
-a <- unique(df_2020$Pobreza)
-a <- as.data.frame(a)
-a
 ```
 
 
@@ -533,8 +536,13 @@ union_final_pobreza <- data.frame(lapply(union_final_pobreza, as.character), str
 ```{r}
 head(union_final_pobreza,10)
 ```
+### Homologación de la categoría de pobreza.
 
-
+```{r}
+a <- unique(union_final_pobreza$Pobreza)
+a <- as.data.frame(a)
+a
+```
 
 
 ```{r}
@@ -552,17 +560,19 @@ union_final_pobreza$Pobreza[union_final_pobreza$Pobreza == "No pobres"]  <- "no 
 union_final_pobreza$Pobreza[union_final_pobreza$Pobreza == "Pobres no extremos"]  <- "no pobre"
 ```
 
+
 ```{r}
-head(union_final_pobreza,10)
+a <- unique(union_final_pobreza$Pobreza)
+a <- as.data.frame(a)
+a
 ```
 
-```{r}
-unique(union_final_pobreza$Pobreza)
-```
-
+### Homologación de la categoría etnia.
 
 ```{r}
-unique(union_final_pobreza$Etnia)
+a <- unique(union_final_pobreza$Etnia)
+a <- as.data.frame(a)
+a
 ```
 
 
@@ -602,32 +612,67 @@ union_final_pobreza$Etnia[union_final_pobreza$Etnia == "Yagan"  ]  <- "Yagán"
 
 
 ```{r}
-unique(union_final_pobreza$Etnia)
+a <- unique(union_final_pobreza$Etnia)
+a <- as.data.frame(a)
+a
 ```
+### Homologación de la categoría de alfabetismo:
+
+```{r}
+a <- unique(union_final_pobreza$Alfabetismo)
+a <- as.data.frame(a)
+a
+```
+
+Según la ONU, una persona analfabeta es aquella que no puede ni leer ni escribir un breve y simple mensaje relacionado con su vida diaria.
+
+>https://es.wikipedia.org/wiki/Analfabetismo
 
 
 
 ```{r}
-write_xlsx(union_final_pobreza,"union_final_pobreza.xlsx")
+union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "No"]  <- "No"
+union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "Sí" ]  <- "Sí"
+union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "No sabe /Sin dato"]  <- "NS/NR/SD"
+
+union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "No, sólo lee"]  <- "No"
+union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "Sí, lee y escribe"]  <- "Sí"
+union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "No, ninguno" ]  <- "No"
+
+union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "No, sólo escribe"]  <- "No"
+union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "NS/NR" ]  <- "NS/NR/SD"
+union_final_pobreza$Alfabetismo[union_final_pobreza$Alfabetismo == "No sabe/responde" ]  <- "NS/NR/SD"
+
+
+
 ```
 
 
+NS/NR/SD: No sabe, no responde o sin dato.
+
+```{r}
+a <- unique(union_final_pobreza$Alfabetismo)
+a <- as.data.frame(a)
+a
+```
 
 
+### No resulta necesario homologar las categorías de sexo:
+
+```{r}
+a <- unique(union_final_pobreza$Sexo)
+a <- as.data.frame(a)
+a
+```
 
 
+```{r}
+write_xlsx(union_final_pobreza,"union_final_pobreza_etnia.xlsx")
+```
 
-## Pobreza multidimensional
 
-|                            |   2013        	     |  2015              |   2017	           |
-|---	                       |---	                 |---                 |---     	           |
-|Variable                    | **pobreza_multi**        | **pobreza_multi_4d**   | **pobreza_multi_4d**   |
-|                            |                      | **pobreza_multi_5d**   | **pobreza_multi_5d**   |
-|---	                       |---	                 |---                 |---   	           |
-|Categorías                  | no pobre             | no pobre           | no pobre           |
-|                            | pobre                | pobre              | pobre              |
+## Parte II: Inmigrantes
 
-La variable: pobreza_multi_5d,  "Situación de pobreza multidimensional" considera la dimensión: "Entorno y Redes".
 
 
 
