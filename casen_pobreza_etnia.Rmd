@@ -873,6 +873,11 @@ a <- unique(df_2020_m$Alfabetismo)
 a <- as.data.frame(a)
 a
 ```
+```{r}
+a_2020_arreglado <- saveRDS(df_2020_m,"df_2020_m.drs")
+```
+
+
 
 
 ```{r}
