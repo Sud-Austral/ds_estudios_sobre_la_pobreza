@@ -1,4 +1,10 @@
 
 # Estudios sobre la pobreza
 
-![migrant_mother](migrant-mother.jpg)
+![](madre_migrante.jpg)
+
+ingresos_migra_2020.Rmd\
+https://rpubs.com/dataintelligence/ingresos_migra_2020_Casen
+
+ingresos_etnia_2020.Rmd\
+https://rpubs.com/dataintelligence/ingresos_etnia_2020_Casen
