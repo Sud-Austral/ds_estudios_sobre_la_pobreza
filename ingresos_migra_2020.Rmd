@@ -1,0 +1,650 @@
+---
+title:  Ingresos en la Casen 2020 (Etnias)
+
+author:
+- name: VE-CC-AJ
+  affiliation: DataIntelligence
+subtitle: | 
+  Ingresos y Gini por comuna según la Casen del 2020.
+  
+header-includes:
+   - \usepackage[]{babel}
+
+output:
+  rmdformats::html_clean:
+    highlight: kate
+    toc: true
+    use_bookdown: true    
+---
+
+date: `r format(Sys.time(), "%d-%m-%Y")`
+
+<style type="text/css">
+.main-container {
+  max-width: 1600px;
+  margin-left: 100px;
+  margin-right: auto;
+}
+</style>
+
+# Introducción {#test1}
+
+## Recordemos los cuatro datos cuantitativos fundamentales de la generación de los ingresos:
+
+ | | | | 
+:-----:|:-----:|:-----:|:-----:|:-----:
+ | **Tipo** |Ingreso total|Ingreso autónomo|Ingreso del trabajo|Ingreso de la ocupación principal
+año| | |
+2017|ytotcor|ytrabajocor|ytrabajocor|yoprcor
+2015|ytotcor|ytrabajocor|ytrabajocor|yoprcor
+2013|ytotcor|ytrabajocor|ytrabajocor|yoprcor
+2011|ytrabaj |yautaj |ytrabaj      |yopraj
+2009|ytrabaj |yautaj |ytrabaj      |yopraj
+2006|ytrabaj |yautaj |ytrabaj      |yopraj
+
+
+```{r , message=FALSE, warning=FALSE, include = FALSE, eecho = FALSE}
+#suppressWarnings(library(RODBC))
+library(ggplot2)
+library(ggpubr)
+library(markdown)
+library(shiny)
+library(shinythemes)
+library(tidyverse)
+library(magrittr)
+library(lubridate)
+library(plotly)
+library(xts)
+library(dygraphs)
+library(kableExtra)
+library(knitr)
+library("readxl")
+library(rsconnect)
+library(dplyr)
+library(summarytools)
+library(epiDisplay)
+#library(leaflet)
+library(haven)
+library(epiDisplay)
+library("readxl")
+library(expss)
+library(hrbrthemes)
+library(viridis)
+library(viridisLite)
+library(DescTools)
+library(roperators)
+library(shinycssloaders)
+library(writexl)
+library(labelled)
+library(tidyverse)
+library(haven)
+library(readr)
+library(sjmisc)
+library(WriteXLS)
+library(ineq)
+library(readstata13)
+library(reldist)
+library(foreign)
+```
+
+
+El mismo concepto asociado a Ingreso total (**ytotcor**) se mantiene en la Casen del 2020.
+
+## Lectura de bases de datos Casen 2020
+
+```{r, warning=FALSE, message=FALSE}
+casen2020 <- read.spss("../../Archivos_grandes/Casen en Pandemia 2020 SPSS.sav")
+casen2020 <- as.data.frame(casen2020)
+```
+
+## Despleguemos los 100 primeros registros:
+
+
+```{r}
+casen2020_sub <-casen2020[c(1:100),]
+kbl(casen2020_sub ) %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  kable_paper() %>%
+  scroll_box(width = "100%", height = "300px")
+```
+
+
+# Etnia
+
+
+
+
+<br>
+
+## Homologemos las categorías de respuesta de ALFABETISMO en E6A de la Casen 2020:
+
+Primero transformemos los factores del dataframe a carácteres:
+
+```{r}
+casen2020 <- data.frame(lapply(casen2020  ,as.character), stringsAsFactors=FALSE)
+```
+
+Realizamos nuestra asignación: recordemos que todos aquellos que afirman que sí asistieron a la educación básica y superiores se consideran "Alfabetos".
+
+```{r, warning=FALSE}
+casen2020$e6a[casen2020$e6a == "Educación Media Científico-Humanista"]  <- "Sí"
+casen2020$e6a[casen2020$e6a == "Educación Especial (Diferencial)"]  <- "No"
+casen2020$e6a[casen2020$e6a == "Educación Básica"]  <- "Sí"
+casen2020$e6a[casen2020$e6a == "Técnico Nivel Superior Incompleto (Carreras 1 a 3 años)"]  <- "Sí"
+casen2020$e6a[casen2020$e6a == "Técnico Nivel Superior Completo (Carreras 1 a 3 años)"]  <- "Sí"
+casen2020$e6a[casen2020$e6a == "Técnica Comercial, Industrial o Normalista (Sistema Antiguo)"]  <- "Sí"
+casen2020$e6a[casen2020$e6a == "Humanidades (Sistema Antiguo)"]  <- "Sí"
+casen2020$e6a[casen2020$e6a == "Profesional Incompleto (Carreras 4 ó más años)"]  <- "Sí"
+casen2020$e6a[casen2020$e6a == "Educación Media Técnica Profesional"]  <- "Sí"
+casen2020$e6a[casen2020$e6a == "Profesional Completo (Carreras 4 ó más años)"]  <- "Sí"
+casen2020$e6a[casen2020$e6a == "Jardín Infantil (Medio menor y Medio mayor)"]  <- "No"
+casen2020$e6a[casen2020$e6a == "Nunca asistió"]  <- "No"
+casen2020$e6a[casen2020$e6a == "Prekínder / Kínder (Transición menor y Transición Mayor)"]  <- "No"
+casen2020$e6a[casen2020$e6a == "Postgrado Incompleto"]  <- "Sí"
+casen2020$e6a[casen2020$e6a == "Sala cuna"]  <- "No"
+casen2020$e6a[casen2020$e6a == "Primaria o Preparatoria (Sistema antiguo)"]  <- "Sí"
+casen2020$e6a[casen2020$e6a == "Postgrado Completo"]  <- "Sí"
+```
+
+<br>
+
+## Homologemos las categorías de respuesta de **pobreza** en la Casen 2020:
+
+```{r}
+a <- unique(casen2020$pobreza)
+a <- as.data.frame(a)
+a
+```
+
+
+```{r}
+casen2020$pobreza[casen2020$pobreza == "No pobres"]  <- "no pobre"
+casen2020$pobreza[casen2020$pobreza == "Pobres extremos"]  <- "pobre extremo"
+casen2020$pobreza[casen2020$pobreza == "Pobres no extremos"]  <- "pobre"
+```
+
+
+```{r}
+a <- unique(casen2020$pobreza)
+a <- as.data.frame(a)
+a
+```
+
+<br>
+
+## Homologemos las categorías de respuesta de Etnia:
+
+r3. En Chile, la ley reconoce diez pueblos indígenas, ¿[NOMBRE] pertenece? (sic)
+
+```{r}
+a <- unique(casen2020$r3)
+a <- as.data.frame(a)
+a
+```
+
+
+```{r}
+casen2020$r3[casen2020$r3 == "Aimara" ]  <- "Aymara"
+casen2020$r3[casen2020$r3 == "No pertenece a ninguno de estos pueblos indígenas" ]  <-  "NS/NR"
+casen2020$r3[casen2020$r3 == "Mapuche"]  <- "Mapuche"
+casen2020$r3[casen2020$r3 == "Diaguita"]  <- "Diaguita"
+casen2020$r3[casen2020$r3 == "Atacameño (Likan-Antai)" ]  <- "Atacameño"
+casen2020$r3[casen2020$r3 == "Quechua" ]  <- "Quechua"
+casen2020$r3[casen2020$r3 == "Yámana o Yagán" ]  <- "Yagán"
+casen2020$r3[casen2020$r3 == "Rapa-Nui o Pascuenses"]  <- "Pascuense"
+casen2020$r3[casen2020$r3 == "Collas"]  <- "Coya"
+casen2020$r3[casen2020$r3 == "Kawashkar o Alacalufes" ]  <- "Alacalufe"
+casen2020$r3[casen2020$r3 == "Chango" ]  <- "Chango"
+```
+
+
+
+```{r}
+a <- unique(casen2020$r3)
+a <- as.data.frame(a)
+a
+```
+
+## Para las categorías de respuesta de sexo no hay que homologar nada:
+
+```{r}
+a <- unique(casen2020$sexo)
+a <- as.data.frame(a)
+a
+```
+
+
+
+## Calculamos los promedios comunales de ytotcor:
+
+
+```{r , message=FALSE, warning=FALSE, results='hide'}
+library(reldist)
+casen2020$ytotcor <- as.numeric(casen2020$ytotcor)
+ab_2020 <- casen2020[!is.na(casen2020$ytotcor),]
+Q <- quantile(ab_2020$ytotcor, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2020$ytotcor)
+eliminated <- subset(ab_2020, ab_2020$ytotcor > (Q[1] - 1.5*iqr) & ab_2020$ytotcor < (Q[2]+1.5*iqr))
+a <- eliminated$ytotcor
+b <- eliminated$comuna
+c <- eliminated$sexo
+d <- eliminated$r3 #etnia
+xx <- eliminated$e6a #alfabetismo
+anio <- 2020
+promedios_grupales <-aggregate(a, by=list(b, c, d ,xx), FUN = mean , na.rm = TRUE)
+promedios_grupales_sd <-aggregate(a, by=list(b, c, d ,xx), FUN = sd , na.rm = TRUE)
+promedios_grupales_gini <-aggregate(a, by=list(b, c, d ,xx), FUN = gini , na.rm = TRUE)
+promedios_grupales$sd = promedios_grupales_sd$sd.a
+promedios_grupales$gini = promedios_grupales_gini$gini.a
+d <- promedios_grupales
+d$Año <- anio 
+names(d)[1] <- "Comuna"
+names(d)[4] <- "Alfabetismo"
+names(d)[2] <- "Sexo"
+names(d)[3] <- "Etnia"
+dd <- mutate_if(d, is.factor, as.character)
+dd$clave <- paste0(dd$Comuna,dd$Sexo,dd$Etnia, dd$Alfabetismo)
+head(dd,10)
+```
+
+## Hay que construir la ttcc de frecuencias de las poblaciones sin incluir ingresos **para ponderar y hacer promedios de promedios**:
+
+```{r}
+eliminated <- casen2020
+b <- eliminated$comuna
+c <- eliminated$sexo
+d <- eliminated$r3 #etnia
+e <- eliminated$e6a #alfabetismo
+eliminated$expc <- as.numeric(eliminated$expc)
+anio <- 2020
+cross_tab =  xtabs(eliminated$expc ~   + unlist(b)  + unlist(c)  + unlist(d)  + unlist(e),aggregate(eliminated$expc ~   + unlist(b) + unlist(c) + unlist(d) + unlist(e),eliminated,mean))
+tabla <- as.data.frame(cross_tab)
+d <-tabla[!(tabla$Freq == 0),]
+d$Año <- anio
+names(d)[1] <- "comuna"
+names(d)[2] <- "Sexo"
+names(d)[3] <- "Etnia"
+names(d)[4] <- "Alfa" 
+names(d)[5] <- "Frec" 
+names(d)[6] <- "Anio" 
+ee <- mutate_if(d, is.factor, as.character)
+ee$clave <- paste0(ee$comuna,ee$Sexo,ee$Etnia, ee$Alfa)
+head(ee,10)
+```
+
+```{r}
+write_xlsx(ee,"ttcc_poblacionales_por_4_categorías.xlsx")
+```
+
+## Hacemos la unión entre las frecuencias y los datos de ingresos totales y sus asociados.
+
+```{r}
+new_dataset <-dd  %>% left_join(ee, by ="clave")
+head(new_dataset,10)
+```
+
+## Hay que integrar el código comunal:
+
+```{r}
+codigos_comunales <- readRDS(file = "../../archivos_grandes/codigos_comunales_2011-2017.rds")
+names(codigos_comunales)[1] <- "código"
+names(codigos_comunales)[2] <- "Comuna"
+
+la_union_001 = merge( x = new_dataset, y = codigos_comunales, by = "Comuna", all.x = TRUE)
+head(la_union_001,10)
+```
+
+## Excluímos lo que no nos interesa y mantenemos lo que sí.
+
+
+```{r}
+la_union_001 <- la_union_001[,-c(6,8:13)]
+uf <- la_union_001[,c(1,3,4,2,5,6,8,9,7)]
+write_xlsx(uf,"ingresos_2020_Casen.xlsx")
+```
+
+
+```{r}
+
+head(uf,10)
+```
+
+
+<br>
+<br>
+<br>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ```{r} -->
+<!-- df_2020_m <- new_dataset -->
+<!-- ``` -->
+
+
+
+<!-- Hay que arreglar alfabetismo para 2020: -->
+
+
+<!-- ```{r} -->
+<!-- df_2020_m <- data.frame(lapply(df_2020_m, as.character), stringsAsFactors=FALSE) -->
+<!-- ``` -->
+
+<!-- Realizamos nuestra asignación: -->
+
+<!-- ```{r, warning=FALSE} -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Educación Media Científico-Humanista"]  <- "Sí" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Educación Especial (Diferencial)"]  <- "No" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Educación Básica"]  <- "Sí" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Técnico Nivel Superior Incompleto (Carreras 1 a 3 años)"]  <- "Sí" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Técnico Nivel Superior Completo (Carreras 1 a 3 años)"]  <- "Sí" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Técnica Comercial, Industrial o Normalista (Sistema Antiguo)"]  <- "Sí" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Humanidades (Sistema Antiguo)"]  <- "Sí" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Profesional Incompleto (Carreras 4 ó más años)"]  <- "Sí" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Educación Media Técnica Profesional"]  <- "Sí" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Profesional Completo (Carreras 4 ó más años)"]  <- "Sí" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Jardín Infantil (Medio menor y Medio mayor)"]  <- "No" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Nunca asistió"]  <- "No" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Prekínder / Kínder (Transición menor y Transición Mayor)"]  <- "No" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Postgrado Incompleto"]  <- "Sí" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Sala cuna"]  <- "No" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Primaria o Preparatoria (Sistema antiguo)"]  <- "Sí" -->
+<!-- df_2020_m$Alfabetismo[df_2020_m$Alfabetismo == "Postgrado Completo"]  <- "Sí" -->
+
+<!-- # Hacemos que el campo char de expc sea numerico: -->
+<!-- df_2020_mexpc <- as.numeric(df_2020_m$expc) -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- a <- unique(df_2020_m$Alfabetismo) -->
+<!-- a <- as.data.frame(a) -->
+<!-- a -->
+<!-- ``` -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Migra
+
+
+<br>
+<br>
+<br>
+
+
+
+
+
+
+
+<!-- ```{r} -->
+
+<!-- eliminated <- casen2020 -->
+<!-- a <- eliminated$pobreza -->
+<!-- b <- eliminated$comuna -->
+<!-- c <- eliminated$sexo -->
+<!-- d <- eliminated$r3 -->
+<!-- e <- eliminated$ecivil  -->
+<!-- anio <- 2020 -->
+
+<!-- cross_tab =  xtabs(eliminated$expc ~  +  unlist(a) + unlist(b)  + unlist(c)  + unlist(d)+ unlist(e) ,aggregate(eliminated$expc ~  +  unlist(a) + unlist(b) + unlist(c) + unlist(d)+ unlist(e),eliminated,mean)) -->
+
+<!-- tabla <- as.data.frame(cross_tab) -->
+<!-- d <-tabla[!(tabla$Freq == 0),] -->
+<!-- d$Año <- anio -->
+
+<!-- names(d)[1] <- "pobreza" -->
+<!-- names(d)[2] <- "Comuna" -->
+<!-- names(d)[3] <- "sexo" -->
+<!-- names(d)[4] <- "Etnia" -->
+<!-- names(d)[5] <- "Estado civil"  -->
+<!-- d <- mutate_if(d, is.factor, as.character) -->
+<!-- d -->
+<!-- ``` -->
+
+
+<!-- ```{r} -->
+
+<!-- eliminated <- casen2020 -->
+<!-- a <- eliminated$pobreza_sinte -->
+<!-- b <- eliminated$comuna -->
+<!-- c <- eliminated$sexo -->
+<!-- d <- eliminated$r3 -->
+<!-- e <- eliminated$ecivil  -->
+<!-- anio <- 2020 -->
+
+<!-- cross_tab =  xtabs(eliminated$expc ~  +  unlist(a) + unlist(b)  + unlist(c)  + unlist(d)+ unlist(e) ,aggregate(eliminated$expc ~  +  unlist(a) + unlist(b) + unlist(c) + unlist(d)+ unlist(e),eliminated,mean)) -->
+
+<!-- tabla <- as.data.frame(cross_tab) -->
+<!-- d <-tabla[!(tabla$Freq == 0),] -->
+<!-- d$Año <- anio -->
+
+<!-- names(d)[1] <- "pobreza_sinte" -->
+<!-- names(d)[2] <- "Comuna" -->
+<!-- names(d)[3] <- "sexo" -->
+<!-- names(d)[4] <- "Etnia" -->
+<!-- names(d)[5] <- "Estado civil"  -->
+<!-- d <- mutate_if(d, is.factor, as.character) -->
+<!-- d -->
+<!-- ``` -->
+
+
+<!-- ```{r} -->
+
+<!-- eliminated <- casen2020 -->
+<!-- a <- eliminated$iae -->
+<!-- b <- eliminated$comuna -->
+<!-- c <- eliminated$sexo -->
+<!-- d <- eliminated$r3 -->
+<!-- e <- eliminated$ecivil  -->
+<!-- anio <- 2020 -->
+
+<!-- cross_tab =  xtabs(eliminated$expc ~  +  unlist(a) + unlist(b)  + unlist(c)  + unlist(d)+ unlist(e) ,aggregate(eliminated$expc ~  +  unlist(a) + unlist(b) + unlist(c) + unlist(d)+ unlist(e),eliminated,mean)) -->
+
+<!-- tabla <- as.data.frame(cross_tab) -->
+<!-- d <-tabla[!(tabla$Freq == 0),] -->
+<!-- d$Año <- anio -->
+
+<!-- names(d)[1] <- "iae" -->
+<!-- names(d)[2] <- "Comuna" -->
+<!-- names(d)[3] <- "sexo" -->
+<!-- names(d)[4] <- "Etnia" -->
+<!-- names(d)[5] <- "Estado civil"  -->
+<!-- d <- mutate_if(d, is.factor, as.character) -->
+<!-- d -->
+<!-- ``` -->
+
+
+<!-- ```{r} -->
+
+<!-- eliminated <- casen2020 -->
+<!-- a <- eliminated$iai -->
+<!-- b <- eliminated$comuna -->
+<!-- c <- eliminated$sexo -->
+<!-- d <- eliminated$r3 -->
+<!-- e <- eliminated$ecivil  -->
+<!-- anio <- 2020 -->
+
+<!-- cross_tab =  xtabs(eliminated$expc ~  +  unlist(a) + unlist(b)  + unlist(c)  + unlist(d)+ unlist(e) ,aggregate(eliminated$expc ~  +  unlist(a) + unlist(b) + unlist(c) + unlist(d)+ unlist(e),eliminated,mean)) -->
+
+<!-- tabla <- as.data.frame(cross_tab) -->
+<!-- d <-tabla[!(tabla$Freq == 0),] -->
+<!-- d$Año <- anio -->
+
+<!-- names(d)[1] <- "iai" -->
+<!-- names(d)[2] <- "Comuna" -->
+<!-- names(d)[3] <- "sexo" -->
+<!-- names(d)[4] <- "Etnia" -->
+<!-- names(d)[5] <- "Estado civil"  -->
+<!-- d <- mutate_if(d, is.factor, as.character) -->
+<!-- d -->
+<!-- ``` -->
+
+
+
+<!-- ```{r} -->
+<!-- tablar <- table(d$Etnia, d$sexo) -->
+<!-- tablar <- data.frame(tablar) -->
+<!-- tablar -->
+<!-- ``` -->
+
+<!-- ```{r} -->
+<!-- filtro <- filter(tablar, tablar$Var2 == "Hombre") -->
+<!-- filtro -->
+<!-- ``` -->
+
+
+
+<!-- ```{r} -->
+<!-- table(filtro$Freq)  -->
+<!-- ``` -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ########################### -->
+
+
+<!-- ```{r , message=FALSE, warning=FALSE, results='hide'} -->
+<!-- funcion1 <- function(n){ -->
+
+<!--  xx<-switch(n,"2017","2020") -->
+
+
+<!-- if(xx==2017) { -->
+
+<!-- ab_20217 <- casen2017[!is.na(casen2017$ytotcor),] -->
+<!-- Q <- quantile(ab_20217$ytotcor, probs=c(.25, .75), na.rm = FALSE) -->
+<!-- iqr <- IQR(ab_20217$ytotcor) -->
+<!-- eliminated <- subset(ab_20217, ab_20217$ytotcor > (Q[1] - 1.5*iqr) & ab_20217$ytotcor < (Q[2]+1.5*iqr)) -->
+<!-- eliminated <- mutate_if(eliminated, is.factor, as.character) -->
+<!-- a <- eliminated$ytotcor -->
+<!-- b <- eliminated$comuna -->
+<!-- c <- eliminated$sexo -->
+<!-- d <- eliminated$r3 #etnia -->
+<!-- e <- eliminated$ecivil  -->
+<!-- anio <- 2017 -->
+
+<!-- } -->
+
+<!-- if(xx==2020) { -->
+
+<!-- ab_2020 <- casen2020[!is.na(casen2020$ytotcor),] -->
+<!-- Q <- quantile(ab_2020$ytotcor, probs=c(.25, .75), na.rm = FALSE) -->
+<!-- iqr <- IQR(ab_2020$ytotcor) -->
+<!-- eliminated <- subset(ab_2020, ab_2020$ytotcor > (Q[1] - 1.5*iqr) & ab_2020$ytotcor < (Q[2]+1.5*iqr)) -->
+<!-- eliminated <- mutate_if(eliminated, is.factor, as.character) -->
+<!-- a <- eliminated$ytotcor -->
+<!-- b <- eliminated$comuna -->
+<!-- c <- eliminated$sexo -->
+<!-- d <- eliminated$r3 #etnia -->
+<!-- e <- eliminated$ecivil  -->
+<!-- anio <- 2020 -->
+
+<!-- } -->
+
+<!-- promedios_grupales <-aggregate(a, by=list(b, c, d, e ), FUN = mean , na.rm = TRUE) -->
+<!-- promedios_grupales_sd <-aggregate(a, by=list(b, c, d, e ), FUN = sd , na.rm = TRUE) -->
+<!-- promedios_grupales_gini <-aggregate(a, by=list(b, c, d, e ), FUN = gini , na.rm = TRUE) -->
+
+<!-- promedios_grupales$sd = promedios_grupales_sd$sd.a -->
+<!-- promedios_grupales$gini = promedios_grupales_gini$gini.a -->
+<!-- d<-promedios_grupales -->
+<!-- d$Año <- anio  -->
+
+<!-- names(d)[1] <- "Comuna" -->
+<!-- names(d)[2] <- "Sexo" -->
+<!-- names(d)[3] <- "Etnia" -->
+<!-- names(d)[4] <- "Estado civil" -->
+<!-- names(d)[5] <- "Promedio del Ingreso" -->
+<!-- names(d)[6] <- "Desviación standard" -->
+<!-- names(d)[7] <- "Gini" -->
+<!-- names(d)[8] <- "Año" -->
+
+
+
+
+<!-- # codigos_comunales <- readRDS(file = comunales) -->
+<!-- # names(codigos_comunales)[1] <- "Código" -->
+<!-- # names(codigos_comunales)[2] <- "Comuna"  -->
+
+<!-- # df_2006 = merge( x = d, y = codigos_comunales, by = "Comuna", all.x = TRUE) -->
+<!-- # df <-df_2006[!(df_2006$Promedio == 0),] -->
+<!-- # head(df,5) -->
+<!-- # variable_in<-"ytotcor" -->
+<!-- # ingreso_rds <- paste("e6a_",variable_in,"_",anio,"pruebas.rds", sep="") -->
+<!-- # saveRDS(df,ingreso_rds) -->
+
+<!-- print(d) -->
+<!--   return(d) -->
+
+<!-- } -->
+<!-- ``` -->
+
+<!-- ```{r echo= FALSE} -->
+<!-- for (n in 1:2){ -->
+<!--   funcion1(n) -->
+<!-- } -->
+<!-- ``` -->
+
+
+
+
+
