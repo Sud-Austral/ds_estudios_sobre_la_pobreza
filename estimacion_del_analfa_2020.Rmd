@@ -1,0 +1,139 @@
+---
+title:  Verificación de la estimación del analfabetismo en Chile el 2020
+author:
+- name: VE-CC-AJ
+  affiliation: DataIntelligence
+subtitle: | 
+  Pobreza y desigualdad
+  
+ 
+    
+header-includes:
+   - \usepackage[]{babel}
+
+output:
+  rmdformats::html_clean:
+    highlight: kate
+    toc: true
+    use_bookdown: true    
+---
+
+date: `r format(Sys.time(), "%d-%m-%Y")`
+
+<style type="text/css">
+.main-container {
+  max-width: 1600px;
+  margin-left: 100px;
+  margin-right: auto;
+}
+</style>
+
+```{r setup, include=FALSE}
+library(ggplot2)
+#library(ggpubr)
+library(markdown)
+library(shiny)
+library(shinythemes)
+library(tidyverse)
+library(magrittr)
+library(lubridate)
+#library(plotly)
+library(kableExtra)
+library(knitr)
+library("readxl")
+library(writexl)
+#library(RPostgreSQL)
+#library(devtools)
+library(remotes)
+library(DBI)
+library(tidyverse)
+library(kableExtra)
+#library(reldist)
+library("readxl")
+library("writexl")
+library(kableExtra)
+library(PerformanceAnalytics)
+library("rio")
+library("dplyr")
+library(plotly)
+library(normtest) 
+library(nortest)
+library(moments)
+library(foreign)
+```
+
+
+# Aspectos conceptuales
+
+
+
+```{r}
+alfa <- read_xlsx("union_final_pobreza_etnia.xlsx")
+alfa
+```
+
+```{r}
+etnia_2020 <- filter(alfa,alfa$Año == "2020")
+etnia_2020
+```
+
+```{r}
+library("dplyr")
+etnia_2020$Frecuencia <- as.numeric(etnia_2020$Frecuencia)
+gdp_bycontinents <- etnia_2020 %>%
+    group_by(comuna,Alfabetismo)%>%
+    summarize(fum_frec=sum(Frecuencia))
+
+
+
+kbl(gdp_bycontinents) %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  kable_paper() %>%
+  scroll_box(width = "100%", height = "300px")
+
+
+
+
+
+```
+
+
+```{r}
+etnia_2017 <- filter(alfa,alfa$Año == "2017")
+etnia_2017
+```
+
+
+```{r}
+library("dplyr")
+etnia_2017$Frecuencia <- as.numeric(etnia_2017$Frecuencia)
+gdp_bycontinents <- etnia_2017 %>%
+    group_by(comuna,Alfabetismo)%>%
+    summarize(fum_frec=sum(Frecuencia))
+
+
+kbl(gdp_bycontinents) %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  kable_paper() %>%
+  scroll_box(width = "100%", height = "300px")
+
+
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

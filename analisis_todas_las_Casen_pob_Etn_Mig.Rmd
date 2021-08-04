@@ -655,6 +655,17 @@ a <- unique(union_final_pobreza$Sexo)
 a <- as.data.frame(a)
 a
 ```
+Quedan en la carpeta: df_estudios_sobre_la_pobreza
+
+```{r}
+kbl(union_final_pobreza) %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  kable_paper() %>%
+  scroll_box(width = "100%", height = "300px")
+```
+
+
+
 
 
 ```{r}
@@ -959,7 +970,14 @@ a <- as.data.frame(a)
 a
 ```
 
+Quedan en la carpeta: df_estudios_sobre_la_pobreza
 
+```{r}
+kbl(union_final_pobreza_migra) %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  kable_paper() %>%
+  scroll_box(width = "100%", height = "300px")
+```
 
 ```{r}
 write_xlsx(union_final_pobreza_migra,"union_final_pobreza_migra.xlsx")

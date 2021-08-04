@@ -307,7 +307,7 @@ names(codigos_comunales)[1] <- "código"
 names(codigos_comunales)[2] <- "Comuna"
 
 la_union_001 = merge( x = new_dataset, y = codigos_comunales, by = "Comuna", all.x = TRUE)
-head(la_union_001,10)
+
 ```
 
 ## Excluímos lo que no nos interesa y mantenemos lo que sí.
@@ -321,7 +321,10 @@ write_xlsx(uf,"ingresos_2020_Casen_Migra.xlsx")
 
 
 ```{r}
-head(uf,10)
+kbl(uf) %>%
+  kable_styling(bootstrap_options = c("striped", "hover")) %>%
+  kable_paper() %>%
+  scroll_box(width = "100%", height = "200px")
 ```
 Total de filas:
 
