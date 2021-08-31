@@ -1,7 +1,9 @@
 
 ## Estudios sobre la pobreza
 
-### Objetivo: Generar dos grupos de tablas de contingencia: para las etnias chilenas y para la población inmigrante y en cada una cuantificar para cada comuna chilena la cantidad de no pobres, pobres y pobres extremos según 3 categorías esenciales: alfabetismo, sexo y etnia y una tercera con la que trabajeremos independientemente reemplazando etnia: Migración.
+### Objetivo: Generar dos grupos de tablas de contingencia: para las etnias chilenas y para la población inmigrante y en cada una cuantificar para cada comuna chilena la cantidad de no pobres, pobres y pobres extremos según 3 categorías esenciales: alfabetismo, sexo y etnia.
+
+### Generaremos dos grandes tablas, reemplazando etnia por migración.
 
 Queremos saber cuantos pobres en cifras absolutas y ya expandidas a la población comunal total
 
