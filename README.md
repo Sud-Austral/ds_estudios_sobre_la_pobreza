@@ -3,7 +3,7 @@
 
 ### Objetivo: 
 
-Generar dos grupos de tablas de contingencia: para las etnias chilenas y para la población inmigrante y en cada una cuantificar para cada comuna chilena la cantidad de no pobres, pobres y pobres extremos según 3 categorías esenciales: alfabetismo, sexo y etnia.
+Generar dos grupos de tablas de contingencia: para las etnias chilenas y para la población inmigrante y en cada una cuantificar para cada comuna chilena la cantidad de no pobres, pobres y pobres extremos según 2 categorías esenciales: alfabetismo, sexo.
 
 Construiremos dos grandes tablas, reemplazando etnia por migración.
 
