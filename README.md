@@ -1,7 +1,7 @@
 
 ## Estudios sobre la pobreza
 
-### Objetivo: Generar dos grupos de tablas de contingencia, para las etnias chilenas y para la población inmigrante.
+### Objetivo: Generar dos grupos de tablas de contingencia: para las etnias chilenas y para la población inmigrante.
 
 Para las etnias se pueen construir a partir del 2006, para la inmigración sólo desde el 2011.
 
