@@ -3,6 +3,8 @@
 
 ### Objetivo: Generar dos grupos de tablas de contingencia: para las etnias chilenas y para la población inmigrante.
 
+Queremos saber cuantos pobres en cifras absolutas y ya expandidas a la población comunal total
+
 Para las etnias tenemos datos a partir del 2006, para la inmigración sólo desde el 2011.
 
 ![](madre_migrante.jpg)
