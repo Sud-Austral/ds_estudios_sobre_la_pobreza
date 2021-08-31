@@ -3,7 +3,7 @@
 
 ### Objetivo: Generar dos grupos de tablas de contingencia: para las etnias chilenas y para la población inmigrante.
 
-Para las etnias se pueen construir a partir del 2006, para la inmigración sólo desde el 2011.
+Para las etnias tenemos datos a partir del 2006, para la inmigración sólo desde el 2011.
 
 ![](madre_migrante.jpg)
 
