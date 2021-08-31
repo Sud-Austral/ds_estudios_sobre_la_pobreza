@@ -7,6 +7,15 @@ Queremos saber cuantos pobres en cifras absolutas y ya expandidas a la població
 
 Para las etnias tenemos datos a partir del 2006, para la inmigración sólo desde el 2011.
 
+1. Etnias chilenas.
+Tenemos información en todas las Casen. Las tablas de contingencia se construirán con las siguientes variables por **comuna** para los años:
+2006-2009-2011-2013-2015-2017-2020.
+
+i. Alfabetismo
+ii. Sexo
+iii. Etnia
+iv. POBREZA
+
 ![](madre_migrante.jpg)
 
 ingresos_migra_2020.Rmd\
