@@ -25,7 +25,7 @@ ii. Sexo\
 iii. **Migración**\
 iv. POBREZA
 
-
+PASOS
 
 
 
