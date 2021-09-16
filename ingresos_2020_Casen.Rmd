@@ -1,0 +1,276 @@
+---
+title:  Ingresos en la Casen 2020 (<span style="color:green"></span>)
+
+author:
+- name: VE-CC-AJ
+  affiliation: DataIntelligence
+subtitle: | 
+  <div style='line-height : 28px'>Solución de un error en un primer cálculo<span style='font-size: 4px'>
+  </span> </div>
+header-includes:
+   - \usepackage[]{babel}
+
+output:
+  rmdformats::html_clean:
+    highlight: kate
+    toc: true
+    use_bookdown: true    
+---
+
+fecha: `r format(Sys.time(), "%d-%m-%Y")`
+
+<style type="text/css">
+.main-container {
+  max-width: 1600px;
+  margin-left: 100px;
+  margin-right: auto;
+}
+</style>
+
+# Introducción {#test1}
+
+## Recordemos los cuatro datos cuantitativos fundamentales de la generación de los ingresos:
+
+ | | | | 
+:-----:|:-----:|:-----:|:-----:|:-----:
+ | **Tipo** |Ingreso total|Ingreso autónomo|Ingreso del trabajo|Ingreso de la ocupación principal
+año| | |
+2017|ytotcor|ytrabajocor|ytrabajocor|yoprcor
+2015|ytotcor|ytrabajocor|ytrabajocor|yoprcor
+2013|ytotcor|ytrabajocor|ytrabajocor|yoprcor
+2011|ytrabaj |yautaj |ytrabaj      |yopraj
+2009|ytrabaj |yautaj |ytrabaj      |yopraj
+2006|ytrabaj |yautaj |ytrabaj      |yopraj
+
+El mismo concepto asociado a Ingreso total (**ytotcor**) se mantiene en la Casen del 2020.
+
+## Lectura de bases de datos Casen 2020
+
+```{r , message=FALSE, warning=FALSE, include = FALSE, eecho = FALSE}
+#suppressWarnings(library(RODBC))
+library(ggplot2)
+library(ggpubr)
+library(markdown)
+library(shiny)
+library(shinythemes)
+library(tidyverse)
+library(magrittr)
+library(lubridate)
+library(plotly)
+library(xts)
+library(dygraphs)
+library(kableExtra)
+library(knitr)
+library("readxl")
+library(rsconnect)
+library(dplyr)
+library(summarytools)
+library(epiDisplay)
+#library(leaflet)
+library(haven)
+library(epiDisplay)
+library("readxl")
+library(expss)
+library(hrbrthemes)
+library(viridis)
+library(viridisLite)
+library(DescTools)
+library(roperators)
+library(shinycssloaders)
+library(writexl)
+library(labelled)
+library(tidyverse)
+library(haven)
+library(readr)
+library(sjmisc)
+library(WriteXLS)
+library(ineq)
+library(readstata13)
+library(reldist)
+library(foreign)
+```
+
+```{r, warning=FALSE, message=FALSE}
+casen2020 <- read.spss("../../Archivos_grandes/Casen en Pandemia 2020 SPSS.sav")
+casen2020 <- as.data.frame(casen2020)
+```
+
+```{r}
+# r3_100 <- casen2020[c(1:10),]
+# kbl(r3_100) %>%
+#   kable_styling(bootstrap_options = c("striped", "hover")) %>%
+#   kable_paper() %>%
+#   scroll_box(width = "100%", height = "300px")
+```
+
+Promedio del ingreso autónomo per cápita mensual del hogar, Casen 2015
+
+https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=&ved=2ahUKEwjd_Z3xoKnyAhUFppUCHRjQDDUQFnoECAIQAQ&url=http%3A%2F%2Fobservatorio.ministeriodesarrollosocial.gob.cl%2Fstorage%2Fdocs%2Ffichas-regionales%2F2015%2F3.Promedio_ingreso_autonomo_percapita_del_hogar_mensual_hogar.xlsx&usg=AOvVaw3I6J-N1yxO0Tv25D-tLZra
+
+## Analisis de la comuna de Vitacura
+
+
+```{r}
+vitacura_2020 <- filter(casen2020, casen2020$comuna == "Vitacura")
+# head(vitacura_2020,10)
+# r3_100 <- vitacura_2020[c(1:10),]
+# kbl(r3_100) %>%
+#   kable_styling(bootstrap_options = c("striped", "hover")) %>%
+#   kable_paper() %>%
+#   scroll_box(width = "100%", height = "300px")
+
+```
+```{r}
+vitacura_2020 <- vitacura_2020[,c(7,17, 21,24,44,45,49,566,618)]
+head(vitacura_2020,10)
+```
+
+## ytotcor para Vitacura
+
+
+
+```{r}
+mean(vitacura_2020$ytotcor) 
+```
+
+## Filtremos por edad > 12
+
+
+```{r}
+vitacura_2020 <- filter(vitacura_2020, vitacura_2020$edad >= 12)
+head(vitacura_2020,10)
+```
+
+```{r}
+mean(vitacura_2020$ytotcor) 
+```
+
+
+```{r}
+a <- vitacura_2020$ytotcor
+b <- vitacura_2020$comuna
+c <- vitacura_2020$sexo
+d <- vitacura_2020$r3 #etnia
+anio <- 2020
+
+promedios_grupales <-aggregate(a, by=list(b, c, d), FUN = mean , na.rm = TRUE)
+promedios_grupales_sd <-aggregate(a, by=list(b, c, d ), FUN = sd , na.rm = TRUE)
+promedios_grupales_gini <-aggregate(a, by=list(b, c, d), FUN = gini , na.rm = TRUE)
+promedios_grupales$sd = promedios_grupales_sd$sd.a
+promedios_grupales$gini = promedios_grupales_gini$gini.a
+d <- promedios_grupales
+d$Año <- anio
+names(d)[1] <- "Comuna"
+names(d)[2] <- "Sexo"
+names(d)[3] <- "Etnia"
+names(d)[4] <- "promedio_yautcor"
+dd <- mutate_if(d, is.factor, as.character)
+dd
+```
+
+```{r}
+b <- vitacura_2020$comuna
+c <- vitacura_2020$sexo
+d <- vitacura_2020$r3 #etnia
+anio <- 2017
+cross_tab =  xtabs(vitacura_2020$expc  ~ +  unlist(b) + unlist(c)  + unlist(d) ,aggregate(vitacura_2020$expc ~  +  unlist(b) + unlist(c) + unlist(d),d,mean))
+tabla <- as.data.frame(cross_tab)
+d <-tabla[!(tabla$Freq == 0),]
+d$Año <- anio
+names(d)[1] <- "Comuna"
+d
+```
+
+
+```{r}
+una_suma <- sum(d$Freq)
+(186333.2*378+1226906.5*1179+1878770.5*38910+1138615.9*42072)/una_suma
+```
+
+
+## Generalizacion
+
+
+
+```{r}
+casen2020_2 <- casen2020[,c(7,17, 21,24,44,45,49,566,618)]
+head(casen2020_2,10)
+```
+
+## ytotcor total
+
+```{r}
+mean(casen2020_2$ytotcor) 
+```
+
+## Filtremos por edad > 12
+
+
+```{r}
+casen2020_2_mas_de_12 <- filter(casen2020_2, casen2020_2$edad >= 12)
+head(casen2020_2_mas_de_12,10)
+```
+
+```{r}
+mean(casen2020_2_mas_de_12$ytotcor) 
+```
+
+## Generalizacion
+
+```{r}
+a <- casen2020_2_mas_de_12$ytotcor
+b <- casen2020_2_mas_de_12$comuna
+c <- casen2020_2_mas_de_12$sexo
+d <- casen2020_2_mas_de_12$r3 #etnia
+anio <- 2020
+
+promedios_grupales <-aggregate(a, by=list(b, c, d), FUN = mean , na.rm = TRUE)
+promedios_grupales_sd <-aggregate(a, by=list(b, c, d ), FUN = sd , na.rm = TRUE)
+promedios_grupales_gini <-aggregate(a, by=list(b, c, d), FUN = gini , na.rm = TRUE)
+promedios_grupales$sd = promedios_grupales_sd$sd.a
+promedios_grupales$gini = promedios_grupales_gini$gini.a
+d <- promedios_grupales
+d$Año <- anio
+names(d)[1] <- "Comuna"
+names(d)[2] <- "Sexo"
+names(d)[3] <- "Etnia"
+names(d)[4] <- "promedio_yautcor"
+dd <- mutate_if(d, is.factor, as.character)
+write_xlsx(dd, "ytotcor_por_categorias_Casen_2020.xlsx")
+```
+## Frecuencias
+
+```{r , message=FALSE, warning=FALSE, results='hide'}
+
+b <- casen2020_2_mas_de_12$comuna
+c <- casen2020_2_mas_de_12$sexo
+d <- casen2020_2_mas_de_12$r3 #etnia
+anio <- 2020
+cross_tab =  xtabs(casen2020_2_mas_de_12$expc  ~ +  unlist(b) + unlist(c)  + unlist(d) ,aggregate(casen2020_2_mas_de_12$expc ~  +  unlist(b) + unlist(c) + unlist(d),casen2020_2_mas_de_12,mean))
+tabla <- as.data.frame(cross_tab)
+d <-tabla[!(tabla$Freq == 0),]
+d$Año <- anio
+names(d)[1] <- "Comuna"
+
+write_xlsx(d, "frecuencias_por_categorias_Casen_2020.xlsx")
+```
+
+
+## Verificacion
+
+
+
+
+```{r}
+filtro_ytotcor_vita <- filter(dd, dd$Comuna == "Vitacura")
+filtro_ytotcor_vita
+```
+
+```{r}
+filtro_frec_vita <- filter(d, d$Comuna == "Vitacura")
+filtro_frec_vita
+```
+
+
+
+

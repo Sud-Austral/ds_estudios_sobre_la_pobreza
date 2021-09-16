@@ -1,0 +1,516 @@
+---
+title: Pobreza por ingresos<span style="color:green"> (2006-2020) </span>
+author:
+- name: VE-CC-AJ
+  affiliation: DataIntelligence
+subtitle: | 
+  por comunas y regiones
+header-includes:
+   - \usepackage[]{babel}
+output:
+  rmdformats::html_clean:
+    highlight: kate
+    toc: true
+    use_bookdown: true
+    code_folding: "hide"    
+---
+
+Fecha: `r format(Sys.time(), "%d-%m-%Y")`
+<style type="text/css">
+.main-container {
+  max-width: 1600px;
+  margin-left: 100px;
+  margin-right: auto;
+}
+</style>
+
+
+
+```{r , message=FALSE, warning=FALSE, include = FALSE, eecho = FALSE}
+#suppressWarnings(library(RODBC))
+library(ggplot2)
+library(ggpubr)
+library(markdown)
+library(shiny)
+library(shinythemes)
+library(tidyverse)
+library(magrittr)
+library(lubridate)
+library(plotly)
+library(xts)
+library(dygraphs)
+library(kableExtra)
+library(knitr)
+library("readxl")
+library(rsconnect)
+library(dplyr)
+library(summarytools)
+library(epiDisplay)
+#library(leaflet)
+library(haven)
+library(epiDisplay)
+library("readxl")
+library(expss)
+library(hrbrthemes)
+library(viridis)
+library(viridisLite)
+library(DescTools)
+library(roperators)
+library(shinycssloaders)
+library(writexl)
+library(labelled)
+library(tidyverse)
+library(haven)
+library(readr)
+library(sjmisc)
+library(WriteXLS)
+library(ineq)
+library(readstata13)
+library(reldist)
+library(foreign)
+library(DT)
+```
+
+# Introducción
+
+En éste trabajo nos concentraremos en la distribución de la pobreza en Chile, pobreza que se divide, con diferentes nombres, en tres grandes grupos: no pobres, pobres y pobres extremos.
+
+Veremos que para cifras del año y a  nivel regional, los cálculos  a los que llegamos son exactos a los obtenidos y publicados por Casen en cada año en que fue aplicada. Pero éste es un problema, pues las cifras entregadas en los primeros años de vuelta a la democracia fueron corregidos según una nueva metodología que no conocemos. 
+
+Como lo valores que obtenemos a nivel regional son exactos a los publicados a nivel regional, podemos deducir que también lo serán a nivel comunal, por lo que ideamos una metodología para llevar las frecuencias de pobres y no pobres a niveles calculados con la nueva metodología para poder hacer comparaciones anuales entre Casen de diferentes años.
+
+Los análisis oficiales que entrega Casen y que son descargables de [aquí](http://observatorio.ministeriodesarrollosocial.gob.cl/encuesta-casen-en-pandemia-2020) para el 2020 y de [aquí](http://observatorio.ministeriodesarrollosocial.gob.cl/encuesta-casen-2011) del 2011 hasta 1990, entregan estadísticas muy útiles sobres las cuales comparar.
+
+
+```{r}
+casen2006 <- readRDS("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2006_c.rds")
+casen2006 <- mutate_if(casen2006, is.factor, as.character)
+casen2009 <- readRDS("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2009_c.rds")
+casen2009 <- mutate_if(casen2009, is.factor, as.character)
+casen2011 <- readRDS("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2011_c.rds")
+casen2011 <- mutate_if(casen2011, is.factor, as.character)
+casen2013 <- readRDS("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2013_c.rds")
+casen2013 <- mutate_if(casen2013, is.factor, as.character)
+casen2015 <- readRDS("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2015_c.rds")
+casen2015 <- mutate_if(casen2015, is.factor, as.character)
+casen2017 <- readRDS("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2017_c.rds")
+casen2017 <- mutate_if(casen2017, is.factor, as.character)
+#casen2020 <- read.spss(file="C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2020.sav", to.data.frame=TRUE)
+#saveRDS(casen2020,"casen2020.rds")
+casen2020 <- readRDS("casen2020.rds")
+casen2020 <- mutate_if(casen2020, is.factor, as.character)
+codigos_comunales <- readRDS(file = "C:/Users/chris/OneDrive/Documentos/archivos_grandes/codigos_comunales_2011-2017.rds")
+```
+
+
+
+
+<br>
+
+# Pobreza por ingresos
+
+Desde 1990 Casen publica información sobre el porcentaje de pobreza de los chilenos, generalmente divididos en tres categorias: no pobres, pobres y pobres extremos. A continuación se muestran 3 informes diferentes de pobreza y pobreza extrema (los dos primeros se confirman):
+
+
+
+
+## Pobreza 1
+
+![](pobreza_1.pdf.png)
+
+[(ver informe completo acá)](http://observatorio.ministeriodesarrollosocial.gob.cl/storage/docs/casen/2020/Resumen_de_resultados_de_Pobreza_por_Ingresos_y_Distribucion_de_Ingresos.pdf) 
+
+Que coincide con otro informe:
+
+## Pobreza 2
+
+![](p4.png)
+
+[(ver informe completo acá)](http://observatorio.ministeriodesarrollosocial.gob.cl/encuesta-casen-en-pandemia-2020)
+
+## Pobreza 3
+
+![](pobreza_2.png)
+
+1. Por un lado podemos apreciar dos informes con resultados distintos.
+
+2.Nuestros calculos son casi iguales a nivel reginal con el segundo informe.
+
+
+
+[(ver informe completo acá)](http://observatorio.ministeriodesarrollosocial.gob.cl/storage/docs/casen/2006/Resultados_Pobreza_Casen_2006.pdf) 
+
+
+Entonces existen dos publicaciones oficiales de resultados de la medicion de la pobreza de la Casen: los del año y los actualizados.
+
+Podemos demostrar que nuestros cálculos coinciden perfecto con los entregados del año 2006:
+
+<!-- Pobreza por Ingreso Casen en Pandemia  -->
+<!-- hoja 8 de Copia de Pobreza_por_Ingreso_Casen_en_Pandemia_2020-1 -->
+
+A continuación vamos a construir y verificar que nuestros cálculos coincidan con los oficiales no corregidos.
+
+```{r}
+casen2006 <- readRDS("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2006_c.rds")
+tabla_matp <-xtabs(casen2006$EXPR~R+CORTE, data = casen2006)
+indigente <- tabla_matp[,1]
+pobre_no_ind <- tabla_matp[,2]
+no_pobre <- tabla_matp[,3]
+total <- tabla_matp[,1] + tabla_matp[,2] + tabla_matp[,3]
+indigente_por <- indigente*100/total
+indigente_por
+
+tabla_matp <-xtabs(casen2006$EXPC~COMUNA+CORTE, data = casen2006)
+
+# datatable(tabla_matp, extensions = 'Buttons', escape = FALSE, rownames = FALSE,
+#           options = list(dom = 'Bfrtip',
+#           buttons = list('colvis', list(extend = 'collection',
+#           buttons = list(
+#           list(extend='copy'),
+#           list(extend='excel',
+#             filename = 'hitStats'),
+#           list(extend='pdf',
+#             filename= 'hitStats')),
+#           text = 'Download')), scrollX = TRUE))
+
+```
+
+# Verificaremos la exactitud de nuestros calculos para los años 2009, 2011, 2013, 2015, 2017 y 2020.
+
+## 2009
+
+![](pobreza_2009.png)
+
+
+```{r}
+casen2009 <- readRDS("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2009_c.rds")
+tabla_matp <-xtabs(casen2009$EXPR~REGION+CORTE, data = casen2009)
+indigente <- tabla_matp[,1]
+pobre_no_ind <- tabla_matp[,2]
+no_pobre <- tabla_matp[,3]
+total <- tabla_matp[,1] + tabla_matp[,2] + tabla_matp[,3]
+indigente_por <- (indigente+pobre_no_ind)*100/total
+indigente_por
+
+tabla_matp <-xtabs(casen2006$EXPC~COMUNA+CORTE, data = casen2006)
+
+# datatable(tabla_matp, extensions = 'Buttons', escape = FALSE, rownames = FALSE,
+#           options = list(dom = 'Bfrtip',
+#           buttons = list('colvis', list(extend = 'collection',
+#           buttons = list(
+#           list(extend='copy'),
+#           list(extend='excel',
+#             filename = 'hitStats'),
+#           list(extend='pdf',
+#             filename= 'hitStats')),
+#           text = 'Download')), scrollX = TRUE))
+```
+
+
+## 2011
+
+![](pobreza_2011.png)
+
+```{r}
+casen2011 <- readRDS("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2011_c.rds")
+tabla_matp <-xtabs(casen2011$expr_full~region+casen2011$corte, data = casen2011)
+indigente <- tabla_matp[,1]
+pobre_no_ind <- tabla_matp[,2]
+no_pobre <- tabla_matp[,3]
+total <- tabla_matp[,1] + tabla_matp[,2] + tabla_matp[,3]
+indigente_por <- (indigente+pobre_no_ind)*100/total
+indigente_por <- data.frame(indigente_por)
+indigente_por
+
+tabla_matp <-xtabs(casen2013$expr~region+casen2013$pobreza_MN, data = casen2013)
+
+# datatable(tabla_matp, extensions = 'Buttons', escape = FALSE, rownames = FALSE,
+#           options = list(dom = 'Bfrtip',
+#           buttons = list('colvis', list(extend = 'collection',
+#           buttons = list(
+#           list(extend='copy'),
+#           list(extend='excel',
+#             filename = 'hitStats'),
+#           list(extend='pdf',
+#             filename= 'hitStats')),
+#           text = 'Download')), scrollX = TRUE))
+```
+
+
+
+
+## 2013
+
+![](pobreza_2013.png)
+
+
+```{r}
+casen2013 <- readRDS("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2013_c.rds")
+tabla_matp <-xtabs(casen2013$expr~region+casen2013$pobreza_MN, data = casen2013)
+indigente <- tabla_matp[,1]
+pobre_no_ind <- tabla_matp[,2]
+no_pobre <- tabla_matp[,3]
+total <- tabla_matp[,1] + tabla_matp[,2] + tabla_matp[,3]
+indigente_por <- (indigente)*100/total
+indigente_por <- data.frame(indigente_por)
+indigente_por
+
+tabla_matp <-xtabs(casen2013$expr~region+casen2013$pobreza_MN, data = casen2013)
+
+# datatable(tabla_matp, extensions = 'Buttons', escape = FALSE, rownames = FALSE,
+#           options = list(dom = 'Bfrtip',
+#           buttons = list('colvis', list(extend = 'collection',
+#           buttons = list(
+#           list(extend='copy'),
+#           list(extend='excel',
+#             filename = 'hitStats'),
+#           list(extend='pdf',
+#             filename= 'hitStats')),
+#           text = 'Download')), scrollX = TRUE))
+```
+
+
+
+## 2015
+
+![](pobreza_2015.png)
+
+```{r}
+casen2015 <- readRDS("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2015_c.rds")
+tabla_matp <-xtabs(casen2015$expr~region+casen2015$pobreza, data = casen2015)
+indigente <- tabla_matp[,1]
+pobre_no_ind <- tabla_matp[,2]
+no_pobre <- tabla_matp[,3]
+total <- tabla_matp[,1] + tabla_matp[,2] + tabla_matp[,3]
+indigente_por <- (indigente+pobre_no_ind)*100/total
+indigente_por <- data.frame(indigente_por)
+indigente_por
+
+tabla_matp <-xtabs(casen2013$expr~region+casen2013$pobreza_MN, data = casen2013)
+
+# datatable(tabla_matp, extensions = 'Buttons', escape = FALSE, rownames = FALSE,
+#           options = list(dom = 'Bfrtip',
+#           buttons = list('colvis', list(extend = 'collection',
+#           buttons = list(
+#           list(extend='copy'),
+#           list(extend='excel',
+#             filename = 'hitStats'),
+#           list(extend='pdf',
+#             filename= 'hitStats')),
+#           text = 'Download')), scrollX = TRUE))
+```
+
+ <span style="color:red">A partir del 2015 ya no es necesario corregir</span>
+
+# Expansión comunal de la pobreza.
+
+Nos basamos para corregir a criterios actuales de la tabla oficial
+http://observatorio.ministeriodesarrollosocial.gob.cl/encuesta-casen-en-pandemia-2020
+
+![](pobreza_direccion.png)
+
+![](pobreza_tabla.png)
+
+
+
+Caso ejemplo: 2006, Antofagasta. Region II.	Estimación pobres extremos	23.593  según la nueva metodologia. Nosotros contamos 10716.
+
+## Pobreza 1
+
+![](p5.png)
+
+```{r}
+casen2006 <- readRDS("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2006_c.rds")
+casen2006 <- mutate_if(casen2006, is.factor, as.character)
+# tabla_matp <-xtabs(casen2006$EXPC~COMUNA+R+CORTE, data = casen2006)
+# head(tabla_matp,20)
+region_2 <- filter(casen2006, casen2006$R == "II")
+# region_2
+```
+
+Filtramos por Region II
+
+```{r}
+tabla_matp <-xtabs(region_2$EXPC~COMUNA+CORTE, data = region_2)
+head(tabla_matp,20)
+tabla_matp <- as.data.frame(tabla_matp)
+```
+
+Consideramos sólo los pobres extremos:
+
+```{r}
+frec_man_com_parcial_total <- filter(tabla_matp, tabla_matp$CORTE == "Indigente")
+frec_man_com_parcial_total
+codigos_com <- frec_man_com_parcial_total$COMUNA
+#codigos_com
+```
+y los sumamos:
+
+```{r}
+sum(frec_man_com_parcial_total$Freq)
+```
+
+Expandiremos las frecuencias de pobres ty pobres extremos para que lleguen al nivel oficial de la nueva metodología y lo haremos por comuna.
+
+```{r}
+frec_man_com_parcial_total2 <- data.frame()
+for(i in codigos_com){
+  frec_man_com_parcial <- filter(frec_man_com_parcial_total, frec_man_com_parcial_total$COMUNA == i)
+  frec_man_com_parcial$p <- frec_man_com_parcial$Freq*100/sum(frec_man_com_parcial_total$Freq)/100
+  frec_man_com_parcial_total2 <- rbind(frec_man_com_parcial_total2,frec_man_com_parcial)
+}
+```
+
+Calculando una proporción poblacional
+
+```{r}
+
+   frec_man_com_parcial_total2
+```
+```{r}
+sum(frec_man_com_parcial_total2$p)
+```
+
+
+y multiplicandola con el valor al que deseamos llegar:
+
+```{r}
+ frec_man_com_parcial_total2$p_mul <- round(frec_man_com_parcial_total2$p *23593)
+ frec_man_com_parcial_total2
+```
+
+
+```{r}
+sum( frec_man_com_parcial_total2$p_mul)
+```
+
+La columna p_multi sería la que que contenga la cantidad de pobres extremos por comuna corregidos.
+
+
+
+<!-- # Análisis de la pobreza -->
+
+
+<!-- Uno a nivel **comunal** en la Región Metropolitana y tres a nivel Regional: -->
+
+<!-- i. Ingreso autónomo <span style="color:red">percápita</span>  -->
+<!-- del hogar, CASEN 2011 -->
+<!-- ($ de noviembre de 2011) -->
+<!-- de la pagina 16 [de aquí](https://ciperchile.cl/wp-content/uploads/INDICE-DE-PRIORIDAD-SOCIAL-2014.pdf -->
+<!-- ). -->
+
+
+<!-- ii. Ingreso autónomo promedio e ingreso monetario promedio del hogar a nivel regional el 2015: -->
+
+<!-- https://www.bcn.cl/portal/noticias?id=principales-resultados-sobre-pobreza-e-ingresos-regionales-encuesta-casen-2015 -->
+
+
+<!-- Por dos instrumentos diferentes oficiales llegamos a los mismos resultados y son a los cuales intentamos aproximarnos. -->
+
+
+<!-- iii.  Se comparará con la tabla obtenida en las III [(ver aquí)](https://datasocial.ministeriodesarrollosocial.gob.cl/dataSocial/csv/Tablas_Ingreso.xlsx)  -->
+
+<!--  <!-- ![Tabla de referencia](image_2021_08_12T19_27_00_679Z.png) --> 
+
+<!-- iiii. Y la otra con una página interactiva con datos por región [(ver aquí)](https://datasocial.ministeriodesarrollosocial.gob.cl/fichaIndicador/513/2) -->
+
+
+<br>
+
+
+
+# Desde 2015 tenemos las frecuencias sin problemas:
+
+## 2015
+
+```{r}
+casen2015 <- readRDS("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2015_c.rds")
+casen2015 <- mutate_if(casen2015, is.factor, as.character)
+casen2017 <- readRDS("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2017_c.rds")
+casen2017 <- mutate_if(casen2017, is.factor, as.character)
+#casen2020 <- read.spss(file="C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2020.sav", to.data.frame=TRUE)
+#saveRDS(casen2020,"casen2020.rds")
+casen2020 <- readRDS("casen2020.rds")
+casen2020 <- mutate_if(casen2020, is.factor, as.character)
+```
+
+
+```{r}
+tabla_matp <-xtabs(casen2015$expc~comuna+pobreza, data = casen2015)
+head(tabla_matp,20)
+tabla_matp15 <- as.data.frame(tabla_matp)
+tabla_matp15$año <- "2015"
+# tabla_matp15
+```
+
+```{r}
+unique(tabla_matp15$pobreza)
+```
+
+
+
+
+```{r}
+tabla_matp <-xtabs(casen2017$expc~comuna+pobreza, data = casen2017)
+head(tabla_matp,20)
+tabla_matp17 <- as.data.frame(tabla_matp)
+tabla_matp17$año <- "2017"
+# tabla_matp17
+```
+
+
+```{r}
+unique(tabla_matp17$pobreza)
+```
+
+
+```{r}
+tabla_matp <-xtabs(casen2020$expc~comuna+pobreza, data = casen2020)
+head(tabla_matp,20)
+tabla_matp20 <- as.data.frame(tabla_matp)
+tabla_matp20$año <- "2020"
+# tabla_matp20
+```
+
+```{r}
+unique(tabla_matp20$pobreza)
+```
+
+
+<br>
+
+#Desgargue información de pobreza del 2015, 2017 y 2020:
+
+```{r}
+pobreza_15_20 <- rbind(tabla_matp15,tabla_matp17,tabla_matp20)
+datatable(pobreza_15_20, extensions = 'Buttons', escape = FALSE, rownames = FALSE,
+          options = list(dom = 'Bfrtip',
+          buttons = list('colvis', list(extend = 'collection',
+          buttons = list(
+          list(extend='copy'),
+          list(extend='excel',
+            filename = 'hitStats'),
+          list(extend='pdf',
+            filename= 'hitStats')),
+          text = 'Download')), scrollX = TRUE))
+```
+
+
+
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+
+
+
+
+
+

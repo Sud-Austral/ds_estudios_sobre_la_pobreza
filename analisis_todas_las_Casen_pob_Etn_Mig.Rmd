@@ -15,7 +15,8 @@ output:
   rmdformats::html_clean:
     highlight: kate
     toc: true
-    use_bookdown: true    
+    use_bookdown: true  
+    code_folding: hide  
 ---
 
 date: `r format(Sys.time(), "%d-%m-%Y")`
@@ -61,6 +62,8 @@ library(kableExtra)
 library(knitr)
 library(DescTools)
 library(foreign)
+library(DT)
+
 # https://www.datacamp.com/community/tutorials/contingency-tables-r
 
 oldw <- getOption("warn")
@@ -237,8 +240,33 @@ names(codigos_comunales)[1] <- "código"
 names(codigos_comunales)[2] <- "comuna"
 
 df_2006 = merge( x = d, y = codigos_comunales, by = "comuna", all.x = TRUE)
-head(df_2006,10)
+
+datatable(df_2006, extensions = 'Buttons', escape = FALSE, rownames = FALSE,
+          options = list(dom = 'Bfrtip',
+          buttons = list('colvis', list(extend = 'collection',
+          buttons = list(
+          list(extend='copy'),
+          list(extend='excel',
+            filename = 'hitStats'),
+          list(extend='pdf',
+            filename= 'hitStats')),
+          text = 'Download')), scrollX = TRUE))
 ```
+
+
+```{r}
+unique( df_2006$Alfabetismo)
+```
+
+
+```{r}
+unique( dataset2015$e1)
+```
+
+
+
+
+
 
 ### 2009
 

@@ -1,0 +1,819 @@
+---
+title: |
+  <font size="16">¿Cuál fue el nivel educacional más alto alcanzado o el nivel educacional actual? versus los 4 tipos de ingresos, por migracion duarante 6 Casen </font>
+author:
+- name: VE
+  affiliation: DataIntelligence
+subtitle: |
+  migracion
+date: "17-02-2021"
+abstract: |
+  En este artículo generaremos 4 tablas de contingencia que asocian la pregunta ¿Cuál fue el nivel educacional más alto alcanzado o el nivel educacional actual? a las 3 variables estándar(comuna, sexo, alfabetismo) y migracion en torno 4 variables de variable Ingreso. Se generara una tabla por cada ingreso.
+  
+
+header-includes:
+   - \usepackage[]{babel}
+output: 
+  html_document:
+      theme: flatly
+---
+### Índice:
+
+#### [Introducción](#test1)
+#### [Tabla 1: e6a: ¿Cuál fue el nivel educacional más alto alcanzado o el nivel educacional actual?](#test2)
+
+## Introducción {#test1}
+
+
+
+### 1. Recordemos que las cuatro preguntas cualitativas de la generación de los ingresos (PCGI) son:
+
+    ¿Cuál fue el nivel educacional más alto alcanzado o el nivel educacional actual?
+
+
+### 2. Las variables de ingreso a utilizar serán:
+ |**Tipo**| | | 
+:-----:|:-----:|:-----:|:-----:|:-----:
+ |  |Ingreso total|Ingreso autónomo|Ingreso del trabajo|Ingreso de la ocupación principal
+año| | |
+2017|ytotcor|ytrabajocor|ytrabajocor|yoprcor
+2015|ytotcor|ytrabajocor|ytrabajocor|yoprcor
+2013|ytotcor|ytrabajocor|ytrabajocor|yoprcor
+2011|ytrabaj |yautaj |ytrabaj      |yopraj
+2009|ytrabaj |yautaj |ytrabaj      |yopraj
+2006|ytrabaj |yautaj |ytrabaj      |yopraj
+
+</br>
+
+
+```{r , message=FALSE, warning=FALSE, include = FALSE, eecho = FALSE}
+
+#suppressWarnings(library(RODBC))
+
+library(ggplot2)
+library(ggpubr)
+library(markdown)
+library(shiny)
+library(shinythemes)
+library(tidyverse)
+library(magrittr)
+library(lubridate)
+library(plotly)
+library(xts)
+library(dygraphs)
+library(kableExtra)
+library(knitr)
+library("readxl")
+library(rsconnect)
+library(dplyr)
+library(summarytools)
+library(epiDisplay)
+#library(leaflet)
+library(haven)
+library(epiDisplay)
+library("readxl")
+library(expss)
+library(hrbrthemes)
+library(viridis)
+library(viridisLite)
+library(DescTools)
+library(roperators)
+library(shinycssloaders)
+library(writexl)
+library(labelled)
+library(tidyverse)
+library(haven)
+library(readr)
+library(sjmisc)
+library(WriteXLS)
+
+library(ineq)
+library(readstata13)
+library(reldist)
+
+```
+
+
+#### Lectura de bases de datos Casen
+
+```{r}
+dataset_06 <<- readRDS("../../archivos_grandes/casen_2006_c.rds")
+dataset_09 <<- readRDS("../../archivos_grandes/casen_2009_c.rds")
+dataset_11 <<- readRDS("../../archivos_grandes/casen_2011_c.rds")
+dataset_13 <<- readRDS("../../archivos_grandes/casen_2013_c.rds")
+dataset_15 <<- readRDS("../../archivos_grandes/casen_2015_c.rds")
+dataset_17 <<- readRDS("../../archivos_grandes/casen_2017_c.rds")
+```
+
+
+###########################
+#### Tabla 1: ¿Cuál fue el nivel educacional más alto alcanzado o el nivel educacional actual? {#test2}
+###########################
+
+
+#### Tabla de variables
+
+| 2006| 2009| 2011| 2013| 2015| 2017|
+|-----|-----|-----|-----|-----|-----|
+| E8T | E7T | e6a | e6a | e6a | e6a |
+</br>
+
+## Prime tabla: ¿Cuál fue el nivel educacional más alto alcanzado o el nivel educacional actual? versus "ytotcor"
+
+
+```{r , message=FALSE, warning=FALSE, results='hide'}
+funcion1 <- function(n){
+  
+  comunales<-switch(n,"codigos_comunales_2011-2017.rds","codigos_comunales_2011-2017.rds","codigos_comunales_2011-2017.rds","codigos_comunales_2011-2017.rds")
+ xx<-switch(n,"2011","2013","2015","2017")
+
+if(xx==2011) {
+  # dataset_11 <- readRDS("casen_2011_c.rds")
+  ab_2011 <- dataset_11[!is.na(dataset_11$ytotaj ),]
+Q <- quantile(ab_2011$ytotaj , probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2011$ytotaj )
+eliminated <- subset(ab_2011, ab_2011$ytotaj  > (Q[1] - 1.5*iqr) & ab_2011$ytotaj  < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$ytotaj 
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1p_cod #etnia
+f <- eliminated$sexo
+anio <- 2011
+
+#variable_in<-"yautaj"
+}
+ 
+if(xx==2013) {
+  # dataset_06 <- readRDS("casen_2013_c.rds")
+  ab_2013 <- dataset_13[!is.na(dataset_13$ytotcor),]
+Q <- quantile(ab_2013$ytotcor, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2013$ytotcor)
+eliminated <- subset(ab_2013, ab_2013$ytotcor > (Q[1] - 1.5*iqr) & ab_2013$ytotcor < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$ytotcor
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1b_p_cod #etnia
+f <- eliminated$sexo
+anio <- 2013
+
+#variable_in<-"ytotcor"
+}
+ 
+if(xx==2015) {
+  # dataset_15 <- readRDS("casen_2015_c.rds")
+  ab_2015 <- dataset_15[!is.na(dataset_15$ytotcor),]
+Q <- quantile(ab_2015$ytotcor, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2015$ytotcor)
+eliminated <- subset(ab_2015, ab_2015$ytotcor > (Q[1] - 1.5*iqr) & ab_2015$ytotcor < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$ytotcor
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1aesp_cod #etnia
+f <- eliminated$sexo
+anio <- 2015
+#variable_in<-"ytotcor"
+}
+ 
+if(xx==2017) {
+  # dataset_17 <- readRDS("casen_2017_c.rds")
+  ab_2017 <- dataset_17[!is.na(dataset_17$ytotcor),]
+Q <- quantile(ab_2017$ytotcor, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2017$ytotcor)
+eliminated <- subset(ab_2017, ab_2017$ytotcor > (Q[1] - 1.5*iqr) & ab_2017$ytotcor < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$ytotcor
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1a_cod #etnia
+f <- eliminated$sexo
+anio <- 2017
+# variable_in<-"ytotcor"
+}
+
+
+promedios_grupales <-aggregate(a, by=list(b, c, d, e,f), FUN = mean , na.rm = TRUE)
+promedios_grupales_sd <-aggregate(a, by=list(b, c, d, e,f), FUN = sd , na.rm = TRUE)
+promedios_grupales_gini <-aggregate(a, by=list(b, c, d, e,f), FUN = gini , na.rm = TRUE)
+
+promedios_grupales$sd = promedios_grupales_sd$sd.a
+promedios_grupales$gini = promedios_grupales_gini$gini.a
+d<-promedios_grupales
+d$Año <- anio
+# head(d,5)
+
+names(d)[1] <- "Comuna"
+names(d)[2] <- "e6a"
+names(d)[3] <- "Alfabetismo"
+names(d)[4] <- "Etnia"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Promedio del Ingreso"
+names(d)[7] <- "Desviación standard"
+names(d)[8] <- "Gini"
+names(d)[9] <- "Año"
+# head(d,3)
+codigos_comunales <- readRDS(file = comunales)
+names(codigos_comunales)[1] <- "Código"
+names(codigos_comunales)[2] <- "Comuna"
+# codigos_comunales
+
+df_2006 = merge( x = d, y = codigos_comunales, by = "Comuna", all.x = TRUE)
+df <-df_2006[!(df_2006$Promedio == 0),]
+head(df,5)
+variable_in<-"ytotcor"
+ingreso_rds <- paste("e6a_",variable_in,"_",anio,"pruebas.rds", sep="")
+saveRDS(df,ingreso_rds)
+
+# print(df)
+  return(df)
+
+}
+```
+
+
+
+
+
+
+```{r echo= FALSE}
+for (n in 1:4){
+  funcion1(n)
+}
+```
+
+#### Código para homologar las categorias de respuesta de **Alfabetismo** y **Etnia**
+
+```{r echo= FALSE}
+receptaculo <- data.frame()
+for (n in 1 : 4){
+    numero <<- switch(n, "2011","2013","2015","2017")
+    diputados_2001_union <- paste("e6a_ytotcor_",numero,"pruebas.rds", sep="")
+    diputados_2001_union <- readRDS(diputados_2001_union)
+
+    receptaculo <<- rbind(receptaculo, diputados_2001_union)
+    
+}
+alfabetismo <- read_xlsx("alfabetismo_unicos.xlsx")
+categorias <- read_xlsx("categorias_etnia.xlsx")
+
+nuevas_cat = merge( x = receptaculo, y = alfabetismo, by = "Alfabetismo", all.x = TRUE)
+alfa_corr <- nuevas_cat[,c(-1)]
+# head(alfa_corr,5)
+
+categoriasbuenas = merge( x = alfa_corr, y = categorias, by = "Etnia", all.x = TRUE)
+etnia_corr <- categoriasbuenas[,c(-1)]
+names(etnia_corr)[9] <- "Alfabetismo"
+names(etnia_corr)[10] <- "Etnia"
+receptaculokbl<-etnia_corr[,c(1,2,9,10,3,4,5,6,7,8)]
+# head(etnia_corr,5)
+diputados_2001_union <- paste("e6a_ytotcor_educ_migra_final.rds", sep="")
+saveRDS(receptaculokbl,diputados_2001_union )
+```
+
+```{r echo= FALSE}
+receptaculokbl <- receptaculokbl[1:10,]
+kbl(receptaculokbl) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))%>%
+  scroll_box(width = "100%", height = "490px")
+```
+
+
+
+
+
+## Segunda tabla: ¿Cuál fue el nivel educacional más alto alcanzado o el nivel educacional actual? versus "yautcor"
+
+
+
+
+```{r , message=FALSE, warning=FALSE, results='hide'}
+funcion1 <- function(n){
+  
+  comunales<-switch(n,"codigos_comunales_2011-2017.rds","codigos_comunales_2011-2017.rds","codigos_comunales_2011-2017.rds","codigos_comunales_2011-2017.rds")
+ xx<-switch(n,"2011","2013","2015","2017")
+ # dataset_06 <<- NA
+ 
+if(xx==2011) {
+  # dataset_11 <- readRDS("casen_2011_c.rds")
+  ab_2011 <- dataset_11[!is.na(dataset_11$yautaj),]
+Q <- quantile(ab_2011$yautaj, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2011$yautaj)
+eliminated <- subset(ab_2011, ab_2011$yautaj > (Q[1] - 1.5*iqr) & ab_2011$yautaj < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$yautaj
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1p_cod #etnia
+f <- eliminated$sexo
+anio <- 2011
+
+#variable_in<-"yautaj"
+}
+ 
+if(xx==2013) {
+  # dataset_06 <- readRDS("casen_2013_c.rds")
+  ab_2013 <- dataset_13[!is.na(dataset_13$yautcor),]
+Q <- quantile(ab_2013$yautcor, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2013$yautcor)
+eliminated <- subset(ab_2013, ab_2013$yautcor > (Q[1] - 1.5*iqr) & ab_2013$yautcor < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$yautcor
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1b_p_cod #etnia
+f <- eliminated$sexo
+anio <- 2013
+
+#variable_in<-"yautcor"
+}
+ 
+if(xx==2015) {
+  # dataset_15 <- readRDS("casen_2015_c.rds")
+  ab_2015 <- dataset_15[!is.na(dataset_15$yautcor),]
+Q <- quantile(ab_2015$yautcor, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2015$yautcor)
+eliminated <- subset(ab_2015, ab_2015$yautcor > (Q[1] - 1.5*iqr) & ab_2015$yautcor < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$yautcor
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1aesp_cod #etnia
+f <- eliminated$sexo
+anio <- 2015
+#variable_in<-"yautcor"
+}
+ 
+if(xx==2017) {
+  # dataset_17 <- readRDS("casen_2017_c.rds")
+  ab_2017 <- dataset_17[!is.na(dataset_17$yautcor),]
+Q <- quantile(ab_2017$yautcor, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2017$yautcor)
+eliminated <- subset(ab_2017, ab_2017$yautcor > (Q[1] - 1.5*iqr) & ab_2017$yautcor < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$yautcor
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1a_cod #etnia
+f <- eliminated$sexo
+anio <- 2017
+# variable_in<-"yautcor"
+}
+
+
+promedios_grupales <-aggregate(a, by=list(b, c, d, e,f), FUN = mean , na.rm = TRUE)
+promedios_grupales_sd <-aggregate(a, by=list(b, c, d, e,f), FUN = sd , na.rm = TRUE)
+promedios_grupales_gini <-aggregate(a, by=list(b, c, d, e,f), FUN = gini , na.rm = TRUE)
+
+promedios_grupales$sd = promedios_grupales_sd$sd.a
+promedios_grupales$gini = promedios_grupales_gini$gini.a
+d<-promedios_grupales
+d$Año <- anio
+# head(d,5)
+
+names(d)[1] <- "Comuna"
+names(d)[2] <- "e6a"
+names(d)[3] <- "Alfabetismo"
+names(d)[4] <- "Etnia"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Promedio del Ingreso"
+names(d)[7] <- "Desviación standard"
+names(d)[8] <- "Gini"
+names(d)[9] <- "Año"
+# head(d,3)
+codigos_comunales <- readRDS(file = comunales)
+names(codigos_comunales)[1] <- "Código"
+names(codigos_comunales)[2] <- "Comuna"
+# codigos_comunales
+
+df_2006 = merge( x = d, y = codigos_comunales, by = "Comuna", all.x = TRUE)
+df <-df_2006[!(df_2006$Promedio == 0),]
+head(df,5)
+variable_in<-"yautcor"
+ingreso_rds <- paste("e6a_",variable_in,"_",anio,"pruebas.rds", sep="")
+saveRDS(df,ingreso_rds)
+
+# print(df)
+  return(df)
+
+}
+```
+
+```{r echo= FALSE}
+for (n in 1:4){
+  funcion1(n)
+}
+```
+
+#### Código para homologar las categorias de respuesta de **Alfabetismo** y **Etnia**
+
+```{r echo= FALSE}
+receptaculo <- data.frame()
+for (n in 1 : 4){
+    numero <<- switch(n, "2011","2013","2015","2017")
+    diputados_2001_union <- paste("e6a_yautcor_",numero,"pruebas.rds", sep="")
+    diputados_2001_union <- readRDS(diputados_2001_union)
+
+    receptaculo <<- rbind(receptaculo, diputados_2001_union)
+    
+}
+alfabetismo <- read_xlsx("alfabetismo_unicos.xlsx")
+categorias <- read_xlsx("categorias_etnia.xlsx")
+
+nuevas_cat = merge( x = receptaculo, y = alfabetismo, by = "Alfabetismo", all.x = TRUE)
+alfa_corr <- nuevas_cat[,c(-1)]
+# head(alfa_corr,5)
+
+categoriasbuenas = merge( x = alfa_corr, y = categorias, by = "Etnia", all.x = TRUE)
+etnia_corr <- categoriasbuenas[,c(-1)]
+names(etnia_corr)[9] <- "Alfabetismo"
+names(etnia_corr)[10] <- "Etnia"
+receptaculokbl<-etnia_corr[,c(1,2,9,10,3,4,5,6,7,8)]
+# head(etnia_corr,5)
+diputados_2001_union <- paste("e6a_yautcor_educ_migra_final.rds", sep="")
+saveRDS(receptaculokbl,diputados_2001_union )
+```
+
+```{r echo= FALSE}
+receptaculokbl <- receptaculokbl[1:10,]
+kbl(receptaculokbl) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))%>%
+  scroll_box(width = "100%", height = "490px")
+```
+
+
+
+## Tercer tabla: ¿Cuál fue el nivel educacional más alto alcanzado o el nivel educacional actual? versus "ytrabajocor"
+
+
+
+
+
+```{r , message=FALSE, warning=FALSE, results='hide'}
+funcion1 <- function(n){
+  
+  comunales<-switch(n,"codigos_comunales_2011-2017.rds","codigos_comunales_2011-2017.rds","codigos_comunales_2011-2017.rds","codigos_comunales_2011-2017.rds")
+ xx<-switch(n,"2011","2013","2015","2017")
+ # dataset_06 <<- NA
+ 
+if(xx==2011) {
+  # dataset_11 <- readRDS("casen_2011_c.rds")
+  ab_2011 <- dataset_11[!is.na(dataset_11$ytrabaj),]
+Q <- quantile(ab_2011$ytrabaj, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2011$ytrabaj)
+eliminated <- subset(ab_2011, ab_2011$ytrabaj > (Q[1] - 1.5*iqr) & ab_2011$ytrabaj < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$ytrabaj
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1p_cod #etnia
+f <- eliminated$sexo
+anio <- 2011
+
+#variable_in<-"yautaj"
+}
+ 
+if(xx==2013) {
+  # dataset_06 <- readRDS("casen_2013_c.rds")
+  ab_2013 <- dataset_13[!is.na(dataset_13$ytrabajoCor),]
+Q <- quantile(ab_2013$ytrabajoCor, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2013$ytrabajoCor)
+eliminated <- subset(ab_2013, ab_2013$ytrabajoCor > (Q[1] - 1.5*iqr) & ab_2013$ytrabajoCor < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$ytrabajoCor
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1b_p_cod #etnia
+f <- eliminated$sexo
+anio <- 2013
+
+#variable_in<-"ytrabajoCor"
+}
+ 
+if(xx==2015) {
+  # dataset_15 <- readRDS("casen_2015_c.rds")
+  ab_2015 <- dataset_15[!is.na(dataset_15$ytrabajoCor),]
+Q <- quantile(ab_2015$ytrabajoCor, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2015$ytrabajoCor)
+eliminated <- subset(ab_2015, ab_2015$ytrabajoCor > (Q[1] - 1.5*iqr) & ab_2015$ytrabajoCor < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$ytrabajoCor
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1aesp_cod #etnia
+f <- eliminated$sexo
+anio <- 2015
+#variable_in<-"ytrabajocor"
+}
+ 
+if(xx==2017) {
+  # dataset_17 <- readRDS("casen_2017_c.rds")
+  ab_2017 <- dataset_17[!is.na(dataset_17$ytrabajocor),]
+Q <- quantile(ab_2017$ytrabajocor, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2017$ytrabajocor)
+eliminated <- subset(ab_2017, ab_2017$ytrabajocor > (Q[1] - 1.5*iqr) & ab_2017$ytrabajocor < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$ytrabajocor
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1a_cod #etnia
+f <- eliminated$sexo
+anio <- 2017
+# variable_in<-"ytrabajocor"
+}
+
+
+promedios_grupales <-aggregate(a, by=list(b, c, d, e,f), FUN = mean , na.rm = TRUE)
+promedios_grupales_sd <-aggregate(a, by=list(b, c, d, e,f), FUN = sd , na.rm = TRUE)
+promedios_grupales_gini <-aggregate(a, by=list(b, c, d, e,f), FUN = gini , na.rm = TRUE)
+
+promedios_grupales$sd = promedios_grupales_sd$sd.a
+promedios_grupales$gini = promedios_grupales_gini$gini.a
+d<-promedios_grupales
+d$Año <- anio
+# head(d,5)
+
+names(d)[1] <- "Comuna"
+names(d)[2] <- "e6a"
+names(d)[3] <- "Alfabetismo"
+names(d)[4] <- "Etnia"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Promedio del Ingreso"
+names(d)[7] <- "Desviación standard"
+names(d)[8] <- "Gini"
+names(d)[9] <- "Año"
+# head(d,3)
+codigos_comunales <- readRDS(file = comunales)
+names(codigos_comunales)[1] <- "Código"
+names(codigos_comunales)[2] <- "Comuna"
+# codigos_comunales
+
+df_2006 = merge( x = d, y = codigos_comunales, by = "Comuna", all.x = TRUE)
+df <-df_2006[!(df_2006$Promedio == 0),]
+head(df,5)
+variable_in<-"ytrabajocor"
+ingreso_rds <- paste("e6a_",variable_in,"_",anio,"pruebas.rds", sep="")
+saveRDS(df,ingreso_rds)
+
+# print(df)
+  return(df)
+
+}
+```
+
+```{r echo= FALSE}
+for (n in 1:4){
+  funcion1(n)
+}
+```
+
+#### Código para homologar las categorias de respuesta de **Alfabetismo** y **Etnia**
+
+```{r echo= FALSE}
+receptaculo <- data.frame()
+for (n in 1 : 4){
+    numero <<- switch(n, "2011","2013","2015","2017")
+    diputados_2001_union <- paste("e6a_ytrabajocor_",numero,"pruebas.rds", sep="")
+    diputados_2001_union <- readRDS(diputados_2001_union)
+
+    receptaculo <<- rbind(receptaculo, diputados_2001_union)
+    
+}
+alfabetismo <- read_xlsx("alfabetismo_unicos.xlsx")
+categorias <- read_xlsx("categorias_etnia.xlsx")
+
+nuevas_cat = merge( x = receptaculo, y = alfabetismo, by = "Alfabetismo", all.x = TRUE)
+alfa_corr <- nuevas_cat[,c(-1)]
+# head(alfa_corr,5)
+
+categoriasbuenas = merge( x = alfa_corr, y = categorias, by = "Etnia", all.x = TRUE)
+etnia_corr <- categoriasbuenas[,c(-1)]
+names(etnia_corr)[9] <- "Alfabetismo"
+names(etnia_corr)[10] <- "Etnia"
+receptaculokbl<-etnia_corr[,c(1,2,9,10,3,4,5,6,7,8)]
+# head(etnia_corr,5)
+diputados_2001_union <- paste("e6a_ytrabajocor_educ_migra_final.rds", sep="")
+saveRDS(receptaculokbl,diputados_2001_union )
+```
+
+```{r echo= FALSE}
+receptaculokbl <- receptaculokbl[1:10,]
+kbl(receptaculokbl) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))%>%
+  scroll_box(width = "100%", height = "490px")
+```
+
+
+
+
+
+## Cuarta tabla: ¿Cuál fue el nivel educacional más alto alcanzado o el nivel educacional actual? versus "yoprCor"
+
+
+
+
+```{r , message=FALSE, warning=FALSE, results='hide'}
+funcion1 <- function(n){
+  
+  comunales<-switch(n,"codigos_comunales_2011-2017.rds","codigos_comunales_2011-2017.rds","codigos_comunales_2011-2017.rds","codigos_comunales_2011-2017.rds")
+ xx<-switch(n,"2011","2013","2015","2017")
+ # dataset_06 <<- NA
+
+if(xx==2011) {
+  # dataset_11 <- readRDS("casen_2011_c.rds")
+  ab_2011 <- dataset_11[!is.na(dataset_11$yopraj ),]
+Q <- quantile(ab_2011$yopraj , probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2011$yopraj )
+eliminated <- subset(ab_2011, ab_2011$yopraj  > (Q[1] - 1.5*iqr) & ab_2011$yopraj  < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$yopraj 
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1p_cod #etnia
+f <- eliminated$sexo
+anio <- 2011
+
+#variable_in<-"yautaj"
+}
+ 
+if(xx==2013) {
+  # dataset_06 <- readRDS("casen_2013_c.rds")
+  ab_2013 <- dataset_13[!is.na(dataset_13$yoprCor),]
+Q <- quantile(ab_2013$yoprCor, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2013$yoprCor)
+eliminated <- subset(ab_2013, ab_2013$yoprCor > (Q[1] - 1.5*iqr) & ab_2013$yoprCor < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$yoprCor
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1b_p_cod #etnia
+f <- eliminated$sexo
+anio <- 2013
+
+#variable_in<-"yoprCor"
+}
+ 
+if(xx==2015) {
+  # dataset_15 <- readRDS("casen_2015_c.rds")
+  ab_2015 <- dataset_15[!is.na(dataset_15$yoprCor),]
+Q <- quantile(ab_2015$yoprCor, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2015$yoprCor)
+eliminated <- subset(ab_2015, ab_2015$yoprCor > (Q[1] - 1.5*iqr) & ab_2015$yoprCor < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$yoprCor
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1aesp_cod #etnia
+f <- eliminated$sexo
+anio <- 2015
+#variable_in<-"yoprCor"
+}
+ 
+if(xx==2017) {
+  # dataset_17 <- readRDS("casen_2017_c.rds")
+  ab_2017 <- dataset_17[!is.na(dataset_17$yoprcor),]
+Q <- quantile(ab_2017$yoprcor, probs=c(.25, .75), na.rm = FALSE)
+iqr <- IQR(ab_2017$yoprcor)
+eliminated <- subset(ab_2017, ab_2017$yoprcor > (Q[1] - 1.5*iqr) & ab_2017$yoprcor < (Q[2]+1.5*iqr))
+#eliminated
+a <- eliminated$yoprcor
+b <- eliminated$comuna
+c <- eliminated$e6a
+d <- eliminated$e1 #alfabetismo
+e <- eliminated$r1a_cod #etnia
+f <- eliminated$sexo
+anio <- 2017
+# variable_in<-"yoprcor"
+}
+
+
+promedios_grupales <-aggregate(a, by=list(b, c, d, e,f), FUN = mean , na.rm = TRUE)
+promedios_grupales_sd <-aggregate(a, by=list(b, c, d, e,f), FUN = sd , na.rm = TRUE)
+promedios_grupales_gini <-aggregate(a, by=list(b, c, d, e,f), FUN = gini , na.rm = TRUE)
+
+promedios_grupales$sd = promedios_grupales_sd$sd.a
+promedios_grupales$gini = promedios_grupales_gini$gini.a
+d<-promedios_grupales
+d$Año <- anio
+# head(d,5)
+
+names(d)[1] <- "Comuna"
+names(d)[2] <- "e6a"
+names(d)[3] <- "Alfabetismo"
+names(d)[4] <- "Etnia"
+names(d)[5] <- "Sexo"
+names(d)[6] <- "Promedio del Ingreso"
+names(d)[7] <- "Desviación standard"
+names(d)[8] <- "Gini"
+names(d)[9] <- "Año"
+# head(d,3)
+codigos_comunales <- readRDS(file = comunales)
+names(codigos_comunales)[1] <- "Código"
+names(codigos_comunales)[2] <- "Comuna"
+# codigos_comunales
+
+df_2006 = merge( x = d, y = codigos_comunales, by = "Comuna", all.x = TRUE)
+df <-df_2006[!(df_2006$Promedio == 0),]
+head(df,5)
+variable_in<-"yoprCor"
+ingreso_rds <- paste("e6a_",variable_in,"_",anio,"pruebas.rds", sep="")
+saveRDS(df,ingreso_rds)
+
+# print(df)
+  return(df)
+
+}
+```
+
+```{r echo= FALSE}
+for (n in 1:4){
+  funcion1(n)
+}
+```
+
+#### Código para homologar las categorias de respuesta de **Alfabetismo** y **Etnia**
+
+```{r echo= FALSE}
+receptaculo <- data.frame()
+for (n in 1 : 4){
+    numero <<- switch(n, "2011","2013","2015","2017")
+    diputados_2001_union <- paste("e6a_yoprCor_",numero,"pruebas.rds", sep="")
+    diputados_2001_union <- readRDS(diputados_2001_union)
+
+    receptaculo <<- rbind(receptaculo, diputados_2001_union)
+    
+}
+alfabetismo <- read_xlsx("alfabetismo_unicos.xlsx")
+categorias <- read_xlsx("categorias_etnia.xlsx")
+
+nuevas_cat = merge( x = receptaculo, y = alfabetismo, by = "Alfabetismo", all.x = TRUE)
+alfa_corr <- nuevas_cat[,c(-1)]
+# head(alfa_corr,5)
+
+categoriasbuenas = merge( x = alfa_corr, y = categorias, by = "Etnia", all.x = TRUE)
+etnia_corr <- categoriasbuenas[,c(-1)]
+names(etnia_corr)[9] <- "Alfabetismo"
+names(etnia_corr)[10] <- "Etnia"
+receptaculokbl<-etnia_corr[,c(1,2,9,10,3,4,5,6,7,8)]
+# head(etnia_corr,5)
+diputados_2001_union <- paste("e6a_yoprCor_educ_migra_final.rds", sep="")
+saveRDS(receptaculokbl,diputados_2001_union )
+```
+
+```{r echo= FALSE}
+receptaculokbl <- receptaculokbl[1:10,]
+kbl(receptaculokbl) %>%
+  kable_styling(bootstrap_options = c("striped", "hover"))%>%
+  scroll_box(width = "100%", height = "490px")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
