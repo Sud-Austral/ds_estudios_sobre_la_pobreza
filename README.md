@@ -1,46 +1,15 @@
 
-## Estudios sobre la pobreza
-
-### Objetivo: 
-
-Generar dos grupos de tablas de contingencia: para las etnias chilenas y para la población inmigrante y en cada una cuantificar para cada comuna chilena la cantidad de no pobres, pobres y pobres extremos según 2 categorías esenciales: alfabetismo y sexo.
-
-Construiremos dos grandes tablas, reemplazando etnia por migración.
-
-1. Etnias chilenas.
-Tenemos información en todas las Casen. Las tablas de contingencia se construirán con las siguientes variables por **comuna** para los años:
-2006-2009-2011-2013-2015-2017-2020.
-
-i. Alfabetismo\
-ii. Sexo\
-iii. **Etnia**\
-iv. POBREZA
-
-2. Migración.
-Tenemos información desde la Casen del 2011. Las tablas de contingencia se construirán con las siguientes variables por **comuna** para los años:
-2011-2013-2015-2017-2020.
-
-i. Alfabetismo\
-ii. Sexo\
-iii. **Migración**\
-iv. POBREZA
-
-PASOS
-
-
-
-
-
-
+# Estudios sobre la pobreza
 
 ![](madre_migrante.jpg)
 
-ingresos_migra_2020.Rmd\
-https://rpubs.com/dataintelligence/ingresos_migra_2020_Casen
+**1 ingresos_variables_ttcc_etnia** : construye para ingresos (falta 1) y 5 preguntas relativas a la trabajo,
+ttcc.
 
-ingresos_etnia_2020.Rmd\
-https://rpubs.com/dataintelligence/ingresos_etnia_2020_Casen
+**2 ingresos_variables_ttcc_migra**: 
 
+**3 demostraciones_pobreza** : demostramos algunos errores que se producen entre los ingresos de las personas y la de los habitantes.
 
-Estudio fundamental. Estudia la pobreza bajo 4 categorías sobre todas las casen (para migra desde el 2011)\
-ds_estudios_sobre_la_pobreza/analisis_todas_las_Casen_pob_Etn_Mig.Rmd 
+**4 analisis_todas_las_Casen_pob_Etn_Mig**: estudio prenimimar en el ques se cuenta la cantidad de pobres, pero que no sirve porque no hemos corregido pobreza para
+los años 2006, 2009, 2011 y 2013 pero tenemos los porcentajes a los cuales se llegó.
+Con ellos estimamos las frecuencias y lanzaremos las tablas de pobleza a futuro.

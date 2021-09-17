@@ -253,21 +253,6 @@ datatable(df_2006, extensions = 'Buttons', escape = FALSE, rownames = FALSE,
           text = 'Download')), scrollX = TRUE))
 ```
 
-
-```{r}
-unique( df_2006$Alfabetismo)
-```
-
-
-```{r}
-unique( dataset2015$e1)
-```
-
-
-
-
-
-
 ### 2009
 
 ```{r}
