@@ -26,7 +26,11 @@ Las tablas dicen Ingresos pero son las encuestas completas.
 
 Aplicando nuestros analisis con estas bases de datos se coincide con la data publicada oficial.
 ***
+2\
+La carpeta: pobreza_nueva_metodologia existe un programa pobreza_NM_interpolacion.Rmd, en el que
 
+
+***
 Que internet está en:
 
 https://rpubs.com/dataintelligence/ttcc_pobreza_NM_interpolacion
