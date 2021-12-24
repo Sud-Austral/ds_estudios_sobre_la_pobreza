@@ -1,20 +1,21 @@
 
 # Estudios sobre la pobreza
 
-
-
 <a href="url"><img src="madre_migrante.jpg" align="left" height="300" ></a>
 
-La casen del 2020 trae dos particularidades:
-1 en vez de ceros, trae NAs, al contrario de todas las demas casen casen_2020_c.rds
+**La casen del 2020** trae dos particularidades:
+1 en vez de ceros, trae NAs, al contrario de todas las demas casen casen_2020_c.rds\
 2 No tiene campo alfabetismo, que construimos a partir de una regresión lineal que está en el repositorio:
-ds_estimacion_con_RL_de-analf_2020
+ds_estimacion_con_RL_de-analf_2020\
 
 ***
-1\
-La carpeta: pobreza_nueva_metodologia existe un programa pobreza_NM.Rmd, el cual
-identifica el supuesto error que se observa en las publicaciones oficiales de pobreza,
-que se produce al ser aplicada una nueva metodologia que esta asociada con la crisis subprime y la cantidad de pobres que en vez de aumentar, descienden.
+
+# 1 Carpeta: **pobreza_nueva_metodologia** 
+
+1.1 Existe un programa **pobreza_NM.Rmd**, el cual
+identifica un supuesto error que se observa en las publicaciones oficiales de pobreza, el
+que se produce al ser aplicada una nueva metodologia (asociada con la crisis subprime y la cantidad de pobres en vez de aumentar, descienden).
+
 Para ello tuvimos que utilizar las bases de datos:
 
 1. Ingresos MN 2006.sav
@@ -24,10 +25,14 @@ Para ello tuvimos que utilizar las bases de datos:
 
 Las tablas dicen Ingresos pero son las encuestas completas.
 
-Aplicando nuestros analisis con estas bases de datos se coincide con la data publicada oficial.
+Aplicando nuestros analisis con estas bases de datos coincidimos con la data publicada oficial.
+
+1.2 Existe un **programa pobreza_NM_interpolacion.Rmd**, en el que
+
+1.3 Existe un **prueba_ing_ttcc**, en el que
+
 ***
-2\
-La carpeta: pobreza_nueva_metodologia existe un programa pobreza_NM_interpolacion.Rmd, en el que
+
 
 
 ***
