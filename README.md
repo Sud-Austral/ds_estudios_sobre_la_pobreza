@@ -34,8 +34,6 @@ Aplicando nuestros analisis con estas bases de datos coincidimos con la data pub
 ***
 
 
-
-***
 Que internet está en:
 
 https://rpubs.com/dataintelligence/ttcc_pobreza_NM_interpolacion
