@@ -27,7 +27,7 @@ Las tablas dicen Ingresos pero son las encuestas completas.
 
 Aplicando nuestros analisis con estas bases de datos coincidimos con la data publicada oficial.
 
-1.2 Existe un **programa pobreza_NM_interpolacion.Rmd**, en el que
+1.2 Existe un programa **pobreza_NM_interpolacion.Rmd**, en el que
 
 1.3 Existe un **prueba_ing_ttcc**, en el que
 
