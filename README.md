@@ -7,7 +7,8 @@
 
 La casen del 2020 trae dos particularidades:
 1 en vez de ceros, trae NAs, al contrario de todas las demas casen casen_2020_c.rds
-2 No tiene campo alfabetismo, que construimos a parir de una regresion
+2 No tiene campo alfabetismo, que construimos a partir de una regresión lineal que está en el repositorio:
+ds_estimacion_con_RL_de-analf_2020
 
 ***
 1\
@@ -23,7 +24,7 @@ Para ello tuvimos que utilizar las bases de datos:
 
 Las tablas dicen Ingresos pero son las encuestas completas.
 
-Aplicando nuestros analisis con estas bases de datos se coincide con la data original.
+Aplicando nuestros analisis con estas bases de datos se coincide con la data publicada oficial.
 ***
 
 Que internet está en:
