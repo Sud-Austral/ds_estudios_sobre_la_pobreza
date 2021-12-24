@@ -4,10 +4,10 @@
 <a href="url"><img src="madre_migrante.jpg" align="left" height="300" ></a>
 
 **La casen del 2020** trae dos particularidades:
-1 en vez de ceros, trae NAs, al contrario de todas las demas casen casen_2020_c.rds\
-2 No tiene campo alfabetismo, que construimos a partir de una regresión lineal que está en el repositorio:
-ds_estimacion_con_RL_de-analf_2020\
-
+1 en vez de ceros, trae NAs, al contrario de todas las demas casen\
+2 no tiene campo alfabetismo, que construimos a partir de una regresión lineal en el repositorio:
+**ds_estimacion_con_RL_de-analf_2020**\
+3 la tabla corregida queda en **casen_2020_c.rds**
 ***
 
 # 1 Carpeta: **pobreza_nueva_metodologia** 
