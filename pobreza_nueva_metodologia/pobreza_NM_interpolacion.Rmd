@@ -1,5 +1,5 @@
 ---
-title: Tablas de contingencia de pobreza **Nueva-Metodología**<span style="color:green"> Casen 2006-2020 </span>
+title: Tablas de contingencia de pobreza **Nueva-Metodologia**<span style="color:green"> Casen 2006-2020 </span>
 author:
 - name: VE-CC-AJ
   affiliation: DataIntelligence
@@ -70,37 +70,38 @@ library(zoo)
 
 ```
 
-<h3>En un proceso laberíntico logramos obtener las bases de datos que contenían las categorías de pobreza que coincidían con las tablas oficiales de corrección retroactiva de la Casen</h3>
+<h3>En un proceso laberíntico logramos obtener las bases de datos que contenian las categorías de pobreza que conincidian con las tablas oficiales de corrección retroactiva de la Casen</h3>
 
 Lectura de bases de datos Casen
 
 ```{r, message=FALSE, warning=FALSE}
 
-direccion <- switch(2,"C:/Users/enamo/Desktop/Shiny-R/Casen_en_pandemia_2020/casen/","C:/Users/chris/OneDrive/Documentos/archivos_grandes/")
+direccion <- switch(2,"C:/Users/enamo/Desktop/Shiny-R/Casen_en_pandemia_2020/casen/","C:/Users/chris/Desktop/archivos grandes/")
 
 dataset_06 <<- readRDS(paste0(direccion,"casen_2006_c.rds"))
 dataset_06 <- mutate_if(dataset_06, is.factor, as.character)
 dataset_09 <<- readRDS(paste0(direccion,"casen_2009_c.rds"))
-dataset_09 <- mutate_if(dataset_09, is.factor, as.character)
+dataset_09 <- mutate_if(dataset_09, is.factor, as.character) 
 dataset_11 <<- readRDS(paste0(direccion,"casen_2011_c.rds"))
-dataset_11 <- mutate_if(dataset_11, is.factor, as.character)
+dataset_11 <- mutate_if(dataset_11, is.factor, as.character) 
 dataset_13 <<- readRDS(paste0(direccion,"casen_2013_c.rds"))
-dataset_13 <- mutate_if(dataset_13, is.factor, as.character)
+dataset_13 <- mutate_if(dataset_13, is.factor, as.character) 
 dataset_15 <<- readRDS(paste0(direccion,"casen_2015_c.rds"))
 dataset_15 <- mutate_if(dataset_15, is.factor, as.character)
 dataset_17 <<- readRDS(paste0(direccion,"casen_2017_c.rds"))
 dataset_17 <- mutate_if(dataset_17, is.factor, as.character)
-dataset_20 <<- readRDS(paste0(direccion,"casen_2020_e1.rds"))
+dataset_20 <<- readRDS(paste0(direccion,"casen_2020_c.rds"))
 dataset_20 <- mutate_if(dataset_20, is.factor, as.character)
 ```
-
-
+![](pobreza_1.png)
  
+# 2006
+
 Base de datos Complementaria de Ingresos Nueva Metodología Casen 2006 SPSS
 
 ```{r, message=FALSE, warning=FALSE}
 dataset_06$clave <- paste0(dataset_06$SEG,dataset_06$O,dataset_06$F)
-MN_2006 <- read.spss("C:/Users/chris/OneDrive/Documentos/archivos_grandes/Ingresos MN 2006.sav", to.data.frame = TRUE)
+MN_2006 <- read.spss("C:/Users/chris/Desktop/archivos grandes/Ingresos MN 2006.sav", to.data.frame = TRUE)
 MN_2006$clave <- paste0(MN_2006$seg,MN_2006$o,MN_2006$f)
 
 MN_2006_2 <- MN_2006[,c("clave","pobreza_MN")]
@@ -108,11 +109,27 @@ dataset_06 <- merge(x= dataset_06, y= MN_2006_2, by="clave")
 dataset_06 <- mutate_if(dataset_06, is.factor, as.character)
 ```
 
+```{r, warning=FALSE, message=FALSE}
+ttcc <- xtabs(dataset_06$EXPC~pobreza_MN, data = dataset_06)
+ttcc
+```
+
+```{r, warning=FALSE, message=FALSE}
+print(c("Pobres extremos",as.numeric(ttcc[2]*100/(ttcc[1]+ttcc[2]+ttcc[3]))))
+
+```
+```{r, warning=FALSE, message=FALSE}
+print(c("Pobres",as.numeric((ttcc[3]+ttcc[2])*100/(ttcc[1]+ttcc[2]+ttcc[3]))))
+
+```
+
+# 2009
+
 Base de datos Complementaria de Ingresos Nueva Metodología Casen 2009 SPSS
 	
 ```{r, message=FALSE, warning=FALSE}
 dataset_09$clave <- paste0(dataset_09$SEGMENTO,dataset_09$IDVIV,dataset_09$HOGAR,dataset_09$O)
-MN_2009 <- read.spss("C:/Users/chris/OneDrive/Documentos/archivos_grandes/Ingresos MN 2009.sav", to.data.frame = TRUE)
+MN_2009 <- read.spss("C:/Users/chris/Desktop/archivos grandes//Ingresos MN 2009.sav", to.data.frame = TRUE)
 MN_2009$clave <- paste0(MN_2009$SEGMENTO,MN_2009$IDVIV,MN_2009$HOGAR,MN_2009$O)
 
 MN_2009_2 <- MN_2009[,c("clave","pobreza_MN")]
@@ -120,11 +137,27 @@ dataset_09 <- merge(x= dataset_09, y= MN_2009_2, by="clave")
 dataset_09 <- mutate_if(dataset_09, is.factor, as.character) 
 ```
 
+```{r, warning=FALSE, message=FALSE}
+ttcc <- xtabs(dataset_09$EXPC~pobreza_MN, data = dataset_09)
+ttcc
+```
+
+```{r, warning=FALSE, message=FALSE}
+print(c("Pobres extremos",as.numeric(ttcc[2]*100/(ttcc[1]+ttcc[2]+ttcc[3]))))
+
+```
+```{r, warning=FALSE, message=FALSE}
+print(c("Pobres",as.numeric((ttcc[2]+ttcc[3])*100/(ttcc[1]+ttcc[2]+ttcc[3]))))
+
+```
+
+# 2011
+
 Base Complementaria Ingresos Nueva Metodología Casen 2011 (submuestra noviembre 2011-enero 2012) (Base 2011 utilizada para estimaciones de serie Casen) SPSS
 
 ```{r, message=FALSE, warning=FALSE}
 dataset_11$clave <- paste0(dataset_11$folio,dataset_11$o)
-MN_2011 <- read.spss("C:/Users/chris/OneDrive/Documentos/archivos_grandes/Ingresos MN 2011.sav", to.data.frame = TRUE)
+MN_2011 <- read.spss("C:/Users/chris/Desktop/archivos grandes/Ingresos MN 2011.sav", to.data.frame = TRUE)
 MN_2011$clave <- paste0(MN_2011$folio,MN_2011$o )
 
 MN_2011_2 <- MN_2011[,c("clave","pobreza_MN")]
@@ -132,23 +165,42 @@ dataset_11 <- merge(x= dataset_11, y= MN_2011_2, by="clave")
 dataset_11 <- mutate_if(dataset_11, is.factor, as.character) 
 ```
 
-Base de Datos Complementaria Ingresos Metodología Tradicional Casen 2013 STATA
+```{r, warning=FALSE, message=FALSE}
+ttcc <- xtabs(dataset_11$expc_full~pobreza_MN, data = dataset_11)
+ttcc
+```
+
+```{r, warning=FALSE, message=FALSE}
+print(c("Pobres extremos",as.numeric(ttcc[2]*100/(ttcc[1]+ttcc[2]+ttcc[3]))))
+
+```
+```{r, warning=FALSE, message=FALSE}
+print(c("Pobres",as.numeric((ttcc[2]+ttcc[3])*100/(ttcc[1]+ttcc[2]+ttcc[3]))))
+
+```
+
+# 2013
+
+Para 2013 la pobreza con la nueva metodología ya esta incluida en la base de datos oficial
+
+
+```{r, warning=FALSE, message=FALSE}
+ttcc <- xtabs(dataset_13$expc~pobreza_MN, data = dataset_13)
+ttcc
+```
 
 
 
-```{r, message=FALSE, warning=FALSE}
-dataset_13$clave <- paste0(dataset_13$folio,dataset_13$o)
-MN_2013 <- as.data.frame(read_dta("C:/Users/chris/OneDrive/Documentos/archivos_grandes/casen_2013_ymt.dta"))
-MN_2013$clave <- paste0(MN_2013$folio,MN_2013$o )
+```{r, warning=FALSE, message=FALSE}
+print(c("Pobres extremos",as.numeric(ttcc[2]*100/(ttcc[1]+ttcc[2]+ttcc[3]))))
 
-MN_2013_2 <- MN_2013[,c("clave","pobreza_mt")]
-dataset_13 <- merge(x= dataset_13, y= MN_2013_2, by="clave")
-dataset_13 <- mutate_if(dataset_13, is.factor, as.character) 
+```
+```{r, warning=FALSE, message=FALSE}
+print(c("Pobres",as.numeric((ttcc[2]+ttcc[3])*100/(ttcc[1]+ttcc[2]+ttcc[3]))))
+
 ```
  
- 
-http://observatorio.ministeriodesarrollosocial.gob.cl/encuesta-casen-2013 
- 
+
  
 # Homologación de pobreza
 
@@ -274,7 +326,7 @@ names(df)[1] <- "Pobreza"
 names(df)[2] <- "Comuna"
 df$Año = anio
 
-direc_cod_com <- paste0("C:/Users/chris/OneDrive/Documentos/archivos_grandes/codigos_comunales_2006-2020.rds")
+direc_cod_com <- paste0("C:/Users/chris/Desktop/archivos grandes/codigos_comunales_2006-2020.rds")
 codigos_comunales <- readRDS(file = direc_cod_com)
 names(codigos_comunales)[1] <- "Código"
 names(codigos_comunales)[2] <- "Comuna"
@@ -555,9 +607,9 @@ datatable(tabla_madre, extensions = 'Buttons', escape = FALSE, rownames = FALSE,
 ```
 
  
-# <span style="color:red">Aplicamos la interpolación </span>
 
-```{r, include=FALSE}
+
+```{r}
 tabla_pobreza <- tabla_madre[,c(1,2,3,5,8,11,14,17,20,23)]
 tabla_pobreza$p2007 <- NA
 tabla_pobreza$p2008 <- NA
@@ -570,90 +622,27 @@ tabla_pobreza$p2019 <- NA
 tabla_pobreza$p2021 <- NA
 tabla_pobreza <- tabla_pobreza[,c("Comuna","Código","Pobreza","porcentaje_pobreza1","p2007","p2008","porcentaje_pobreza2","p2010","porcentaje_pobreza3","p2012","porcentaje_pobreza4","p2014","porcentaje_pobreza5","p2016","porcentaje_pobreza6","p2018","p2019","porcentaje_pobreza7","p2021")]
 colnames(tabla_pobreza) <- c("Comuna","Código","Pobreza","p2006","p2007","p2008","p2009","p2010","p2011","p2012","p2013","p2014","p2015","p2016","p2017","p2018","p2019","p2020","p2021")
+```
+```{r}
+head(tabla_pobreza)
+```
 
 
+# Aplicamos la interpolación con na.approx
+
+```{r}
 receptaculo2 <- data.frame()
 for (n in 1:896) {
-  calculado <- na.approx(c(tabla_pobreza[n,c(4:19)]))
+  calculado <- na.approx(c(tabla_pobreza[n,c(4:19)]))*10
   # calculado <- as.data.frame(calculado)
   receptaculo2 <- rbind(receptaculo2,calculado)
 }
 colnames(receptaculo2) <- c("p2006","p2007","p2008","p2009","p2010","p2011","p2012","p2013","p2014","p2015","p2016","p2017","p2018","p2019","p2020")
-
-library(scales)
-tabla_final <- cbind(tabla_pobreza[,c(1,2,3)],receptaculo2)
-tabla_madre <- rbind(tb1,tb2,tb3)
-datatable(tabla_final, extensions = 'Buttons', escape = FALSE, rownames = FALSE,
-          options = list(dom = 'Bfrtip',
-          buttons = list('colvis', list(extend = 'collection',
-          buttons = list(
-          list(extend='copy'),
-          list(extend='excel',
-            filename = 'hitStats'),
-          list(extend='pdf',
-            filename= 'hitStats')),
-          text = 'Download')), scrollX = TRUE))%>%
-    formatRound(columns=c("p2006","p2007","p2008","p2009","p2010","p2011","p2012","p2013","p2014","p2015","p2016","p2017","p2018","p2019","p2020") ,mark = "" )%>%
- formatCurrency(c("p2006","p2007","p2008","p2009","p2010","p2011","p2012","p2013","p2014","p2015","p2016","p2017","p2018","p2019","p2020"),'\U20AC',)
 ```
+
 
 ```{r}
-receptaculo3 <- receptaculo2[,1]
-```
- 
-
-# No pobres
-
-```{r}
-fn_grafico <- function(m){
-  
-  p <- p %>% add_lines(y = ~pob1[,m], name = paste0('No pobre ',colnames(pob1)[m]), mode = 'markers')
-  p <<- p
-}
-pob1 <- filter(tabla_final, Pobreza == "No pobre")
-p <- plot_ly(pob1, width = 1200,  x = ~Comuna, y = ~p2006,   name = 'No pobre 2006', mode = 'markers') %>% add_lines()
-
-for (m in 5:18) {
- fn_grafico(m) 
-}
-
-p
-```
-
-# Pobres
-
-```{r}
-fn_grafico <- function(m){
-  
-  p <- p %>% add_lines(y = ~pob1[,m], name = paste0('Pobre ',colnames(pob1)[m]), mode = 'markers')
-  p <<- p
-}
-pob1 <- filter(tabla_final, Pobreza == "Pobre")
-p <- plot_ly(pob1, width = 1200,  x = ~Comuna, y = ~p2006,   name = 'Pobre 2006', mode = 'markers') %>% add_lines()
-
-for (m in 5:18) {
- fn_grafico(m) 
-}
-
-p
-```
-
-# Pobres extremos
-
-```{r}
-fn_grafico <- function(m){
-  
-  p <- p %>% add_lines(y = ~pob1[,m], name = paste0('Pobre extremo ',colnames(pob1)[m]), mode = 'markers')
-  p <<- p
-}
-pob1 <- filter(tabla_final, Pobreza == "Pobre extremo")
-p <- plot_ly(pob1, width = 1200,  x = ~Comuna, y = ~p2006,   name = 'Pobre extremo 2006', mode = 'markers') %>% add_lines()
-
-for (m in 5:18) {
- fn_grafico(m) 
-}
-
-p
+calculado
 ```
 
 
@@ -661,7 +650,9 @@ p
 
 
 
-
+<br>
+<br>
+<br>
 
 
 

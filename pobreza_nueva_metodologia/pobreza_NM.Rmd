@@ -1,10 +1,13 @@
 ---
-title: Tablas de contingencia de pobreza **Nueva-Metodologia**<span style="color:green"> Casen 2006-2020 </span>
+title:  | 
+     ![](logo_DataIntelligence_normal.png){width=4in} \
+     Tablas de contingencia de pobreza según la **Nueva-Metodología** para las Casen 2006-2020 
 author:
-- name: VE-CC-AJ
+- name: Equipo DS DI
   affiliation: DataIntelligence
 subtitle: | 
-  Por comunas
+  <span style="color:green"> Por comunas </span> 
+  
 header-includes:
    - \usepackage[]{babel}
 output:
@@ -13,9 +16,13 @@ output:
     toc: true
     use_bookdown: true
     code_folding: "hide"    
+    
+# bibliography: references.bib 
 ---
 
-date: `r format(Sys.time(), "%d-%m-%Y")`
+<!-- http://openaccess.uoc.edu/webapps/o2/bitstream/10609/64085/6/romancalafatiTFG0617memoria.pdf -->
+
+`r format(Sys.time(), "%d-%m-%Y")`
 <style type="text/css">
 .main-container {
   max-width: 1600px;
@@ -23,10 +30,9 @@ date: `r format(Sys.time(), "%d-%m-%Y")`
   margin-right: auto;
 }
 </style>
- 
 
 
-```{r , message=FALSE, warning=FALSE, include = FALSE, eecho = FALSE}
+```{r , message=FALSE, warning=FALSE, include = FALSE, echo = FALSE}
 
 #suppressWarnings(library(RODBC))
 
@@ -73,13 +79,17 @@ library(reldist)
 library(DT)
 ```
 
-<h3>En un proceso laberíntico logramos obtener las bases de datos que contenian las categorías de pobreza que conincidian con las tablas oficiales de corrección retroactiva de la Casen</h3>
+<h3>En un proceso laberíntico logramos obtener las bases de datos que contenian las categorías de pobreza que coincidían con las tablas oficiales de corrección retroactiva de las Casen</h3>
+
+![](pobreza_1.png)
+
+
 
 Lectura de bases de datos Casen
 
 ```{r, message=FALSE, warning=FALSE}
 
-direccion <- switch(2,"C:/Users/enamo/Desktop/Shiny-R/Casen_en_pandemia_2020/casen/","C:/Users/chris/OneDrive/Documentos/archivos_grandes/")
+direccion <- switch(2,"C:/Users/enamo/Desktop/Shiny-R/Casen_en_pandemia_2020/casen/","C:/Users/chris/Desktop/archivos grandes/")
 
 dataset_06 <<- readRDS(paste0(direccion,"casen_2006_c.rds"))
 dataset_06 <- mutate_if(dataset_06, is.factor, as.character)
@@ -93,7 +103,7 @@ dataset_15 <<- readRDS(paste0(direccion,"casen_2015_c.rds"))
 dataset_15 <- mutate_if(dataset_15, is.factor, as.character)
 dataset_17 <<- readRDS(paste0(direccion,"casen_2017_c.rds"))
 dataset_17 <- mutate_if(dataset_17, is.factor, as.character)
-dataset_20 <<- readRDS(paste0(direccion,"casen_2020_e1.rds"))
+dataset_20 <<- readRDS(paste0(direccion,"casen_2020_c.rds"))
 dataset_20 <- mutate_if(dataset_20, is.factor, as.character)
 ```
 
@@ -103,7 +113,7 @@ Base de datos Complementaria de Ingresos Nueva Metodología Casen 2006 SPSS
 
 ```{r, message=FALSE, warning=FALSE}
 dataset_06$clave <- paste0(dataset_06$SEG,dataset_06$O,dataset_06$F)
-MN_2006 <- read.spss("C:/Users/chris/OneDrive/Documentos/archivos_grandes/Ingresos MN 2006.sav", to.data.frame = TRUE)
+MN_2006 <- read.spss("C:/Users/chris/Desktop/archivos grandes/Ingresos MN 2006.sav", to.data.frame = TRUE)
 MN_2006$clave <- paste0(MN_2006$seg,MN_2006$o,MN_2006$f)
 
 MN_2006_2 <- MN_2006[,c("clave","pobreza_MN")]
@@ -115,7 +125,7 @@ Base de datos Complementaria de Ingresos Nueva Metodología Casen 2009 SPSS
 	
 ```{r, message=FALSE, warning=FALSE}
 dataset_09$clave <- paste0(dataset_09$SEGMENTO,dataset_09$IDVIV,dataset_09$HOGAR,dataset_09$O)
-MN_2009 <- read.spss("C:/Users/chris/OneDrive/Documentos/archivos_grandes/Ingresos MN 2009.sav", to.data.frame = TRUE)
+MN_2009 <- read.spss("C:/Users/chris/Desktop/archivos grandes/Ingresos MN 2009.sav", to.data.frame = TRUE)
 MN_2009$clave <- paste0(MN_2009$SEGMENTO,MN_2009$IDVIV,MN_2009$HOGAR,MN_2009$O)
 
 MN_2009_2 <- MN_2009[,c("clave","pobreza_MN")]
@@ -127,7 +137,7 @@ Base Complementaria Ingresos Nueva Metodología Casen 2011 (submuestra noviembre
 
 ```{r, message=FALSE, warning=FALSE}
 dataset_11$clave <- paste0(dataset_11$folio,dataset_11$o)
-MN_2011 <- read.spss("C:/Users/chris/OneDrive/Documentos/archivos_grandes/Ingresos MN 2011.sav", to.data.frame = TRUE)
+MN_2011 <- read.spss("C:/Users/chris/Desktop/archivos grandes/Ingresos MN 2011.sav", to.data.frame = TRUE)
 MN_2011$clave <- paste0(MN_2011$folio,MN_2011$o )
 
 MN_2011_2 <- MN_2011[,c("clave","pobreza_MN")]
@@ -135,11 +145,13 @@ dataset_11 <- merge(x= dataset_11, y= MN_2011_2, by="clave")
 dataset_11 <- mutate_if(dataset_11, is.factor, as.character) 
 ```
 
-Para 2013 la pobreza con la nueva metodología ya esta incluida en la base de datos oficial
+![](NM_2013.png)
+
+
 
 ```{r, message=FALSE, warning=FALSE}
 dataset_13$clave <- paste0(dataset_13$folio,dataset_13$o)
-MN_2013 <- as.data.frame(read_dta("C:/Users/chris/OneDrive/Documentos/archivos_grandes//casen_2013_ymt.dta"))
+MN_2013 <- as.data.frame(read_dta("C:/Users/chris/Desktop/archivos grandes/casen_2013_ymt.dta"))
 MN_2013$clave <- paste0(MN_2013$folio,MN_2013$o )
 
 MN_2013_2 <- MN_2013[,c("clave","pobreza_mt")]
@@ -270,7 +282,7 @@ names(df)[1] <- "Pobreza"
 names(df)[2] <- "Comuna"
 df$Año = anio
 
-direc_cod_com <- paste0("C:/Users/chris/OneDrive/Documentos/archivos_grandes//codigos_comunales_2006-2020.rds")
+direc_cod_com <- paste0("C:/Users/chris/Desktop/archivos grandes/codigos_comunales_2006-2020.rds")
 codigos_comunales <- readRDS(file = direc_cod_com)
 names(codigos_comunales)[1] <- "Código"
 names(codigos_comunales)[2] <- "Comuna"
@@ -348,13 +360,13 @@ p
 # Pobre
 
 ```{r, warning=FALSE, message=FALSE}
-df1 <- filter(data_df3, Pobreza == "Pobre",  Año == 2006 )
-df2 <- filter(data_df3, Pobreza == "Pobre",  Año == 2009 )
-df3 <- filter(data_df3, Pobreza == "Pobre",  Año == 2011 )
-df4 <- filter(data_df3, Pobreza == "Pobre",  Año == 2013 )
-df5 <- filter(data_df3, Pobreza == "Pobre",  Año == 2015 )
-df6 <- filter(data_df3, Pobreza == "Pobre",  Año == 2017 )
-df7 <- filter(data_df3, Pobreza == "Pobre",  Año == 2020 )
+df1 <- filter(data_df3, Pobreza == "Pobres no extremos",  Año == 2006 )
+df2 <- filter(data_df3, Pobreza == "Pobres no extremos",  Año == 2009 )
+df3 <- filter(data_df3, Pobreza == "Pobres no extremos",  Año == 2011 )
+df4 <- filter(data_df3, Pobreza == "Pobres no extremos",  Año == 2013 )
+df5 <- filter(data_df3, Pobreza == "Pobres no extremos",  Año == 2015 )
+df6 <- filter(data_df3, Pobreza == "Pobres no extremos",  Año == 2017 )
+df7 <- filter(data_df3, Pobreza == "Pobres no extremos",  Año == 2020 )
 
 names(df1)[c(2,3)] <- c("Pobreza1","Freq1")
 names(df2)[c(2,3)] <- c("Pobreza2","Freq2")
@@ -386,13 +398,13 @@ p
 # Pobre extremo
 
 ```{r, warning=FALSE, message=FALSE}
-df1 <- filter(data_df3, Pobreza == "Pobre extremo",  Año == 2006 )
-df2 <- filter(data_df3, Pobreza == "Pobre extremo",  Año == 2009 )
-df3 <- filter(data_df3, Pobreza == "Pobre extremo",  Año == 2011 )
-df4 <- filter(data_df3, Pobreza == "Pobre extremo",  Año == 2013 )
-df5 <- filter(data_df3, Pobreza == "Pobre extremo",  Año == 2015 )
-df6 <- filter(data_df3, Pobreza == "Pobre extremo",  Año == 2017 )
-df7 <- filter(data_df3, Pobreza == "Pobre extremo",  Año == 2020 )
+df1 <- filter(data_df3, Pobreza == "Pobres extremos",  Año == 2006 )
+df2 <- filter(data_df3, Pobreza == "Pobres extremos",  Año == 2009 )
+df3 <- filter(data_df3, Pobreza == "Pobres extremos",  Año == 2011 )
+df4 <- filter(data_df3, Pobreza == "Pobres extremos",  Año == 2013 )
+df5 <- filter(data_df3, Pobreza == "Pobres extremos",  Año == 2015 )
+df6 <- filter(data_df3, Pobreza == "Pobres extremos",  Año == 2017 )
+df7 <- filter(data_df3, Pobreza == "Pobres extremos",  Año == 2020 )
 
 names(df1)[c(2,3)] <- c("Pobreza1","Freq1")
 names(df2)[c(2,3)] <- c("Pobreza2","Freq2")
