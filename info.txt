@@ -1,0 +1,4 @@
+El programa fundamental que calcula las frecuencias de poblacion degun pobreza y el porcentaje de pobreza es
+pobreza_NM.Rmd, que acumula los archivos en la carpeta "porcentaje_de_pobreza_por_comuna".
+
+1 Las tablas generadas se unirán y se interpolarán, tomando como base la interpolación de la ttcc 001: ruralidad.

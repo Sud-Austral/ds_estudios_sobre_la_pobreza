@@ -1,28 +1,21 @@
 ---
-title: Pobreza según la Nueva-Metodologia implementada por la Casen durante los años 2006,2009 y 2011 <span style="color:green">  </span>
+title: Pobreza según la Nueva-Metodologia implementada por la Casen durante los años 2006,2009 y 2011 v 2.0
 author:
-- name: Christian Castro
-  affiliation: DataIntelligence
-subtitle: | 
-  Por comunas en las 7 últimas Casen
-header-includes:
-   - \usepackage[]{babel}
+   - name: Christian Castro
+     affiliation: DataIntelligence
+date: "`r lubridate::today()`"
+abstract: |
+ Calculamos los ingresos promedios, las desviaciones standard y los coeficientes de Gini por comuna sobre las encuestas Casen expandidas del 2006, 2009, 2011, 2013, 2015, 2017 y 2000. Probablemente se debiera hacer una corrección por ingresos para las tres primeras casen según la "nueva metodología" aplicada a partir de la Casen del 2013.
+ <br><br><br>
 output:
-  rmdformats::html_clean:
-    highlight: kate
+  html_document:
     toc: true
-    use_bookdown: true
-    code_folding: "hide"    
+    toc_float: true
+    toc_depth: 2
+    number_sections: true
+    code_folding: hide
+    theme: readable
 ---
-
-date: `r format(Sys.time(), "%d-%m-%Y")`
-<style type="text/css">
-.main-container {
-  max-width: 1600px;
-  margin-left: 100px;
-  margin-right: auto;
-}
-</style>
  
 ```{r , message=FALSE, warning=FALSE, include = FALSE, echo = FALSE}
 
@@ -100,9 +93,6 @@ dataset_20 <<- readRDS(paste0(direccion,"casen_2020_c.rds"))
 dataset_20 <- mutate_if(dataset_20, is.factor, as.character)
 ```
 
-###########################################################################
-###########################################################################
-###########################################################################
 
 # 2006
 
@@ -114,7 +104,6 @@ Base de datos Complementaria de Ingresos Nueva Metodología Casen 2006:
 
 ```{r, message=FALSE, warning=FALSE}
 dataset_06_nm <- read.spss("C:/Users/chris/Desktop/archivos grandes/Ingresos MN 2006.sav", to.data.frame = TRUE)
-head(dataset_06_nm,5)
 ```
 
 Podemos ver que la "Base de datos Complementaria de Ingresos Nueva Metodología Casen 2006" es un subset de la Casen original que da cuenta sólo de los ingresos de los encuestados, su pertenencia a los deciles por ingresos y su clasificación dentro de las categorías de pobreza (pobreza_MN).
@@ -123,20 +112,11 @@ Extraigamos sólo las columnas que nos son relevantes pra nuestros propósitos a
 
 ```{r, message=FALSE, warning=FALSE}
 dataset_06_nm_relevante <- dataset_06_nm[,c(1,2,3,4)]
-head(dataset_06_nm_relevante,5)
 ```
 
 Nos encontramos con la ausencia de una clave que nos permita unir ésta data con la Casen tradicional y así obtener entre otras cosas el factor de expansión.
 
-```{r}
-unique(dataset_06_nm_relevante$pobreza_MN)
-```
-
-Cuantos NA existen en la columna pobreza_MN?
-
-```{r}
-sum(is.na(dataset_06_nm_relevante$pobreza_MN))
-```
+## Construccion de clave nueva metodologia 2006
 
 Creación de una clave y limpieza de campos irrelevantes
 
@@ -152,7 +132,7 @@ dataset_06_nm_relevante$clave <- paste0(dataset_06_nm_relevante$seg,  dataset_06
 # Nos deshacemos de las que la construyen:
 dataset_06_nm_relevante <- dataset_06_nm_relevante[,-c(1:3)]
 dataset_06_nm_relevante_limpia <- dataset_06_nm_relevante
-dataset_06_nm_relevante_limpia
+
 ```
 
 # Casen 2006 vieja metodología
@@ -160,17 +140,12 @@ dataset_06_nm_relevante_limpia
 Leamos la Casen 2006 aplicada ese año rescatando sólo las columnas que nos importan:
 
 ```{r}
-dataset_06
 dataset_06_relevante <- dataset_06[,c(1:4,11,342)]
-dataset_06_relevante
+
 ```
 
-Cuantos NA existen en la columna CORTE?
 
-```{r}
-sum(is.na(dataset_06_relevante$CORTE))
-```  
-
+## Construccion de clave vieja metodologia 2006
 
 Realizamos el mismo procedimiento anterior de construcción de claves y eliminación de columna sin utilidad:
 
@@ -179,236 +154,115 @@ Realizamos el mismo procedimiento anterior de construcción de claves y eliminac
 dataset_06_relevante$clave <- paste0(dataset_06_relevante$SEG,  dataset_06_relevante$F,  dataset_06_relevante$O, sep = "")
 # nos deshacemos de las columnas que ya no prestan utilidad:
 dataset_06_relevante_limpia <- dataset_06_relevante[,-c(2:4)]
-dataset_06_relevante_limpia
+
 ```
 
-# Las unimos
+## Las unimos
 
 ```{r}
 dataset_2006 <- merge(dataset_06_relevante_limpia,dataset_06_nm_relevante_limpia,by="clave")
 dataset_pobreza_2006 <- dataset_2006
-dataset_pobreza_2006
+
 ```
 
-# Prueba
-
-Haremos una prueba corroborando con las cifras oficiales.
-
-Población total de Chile al 2006:
+Aplicamos tablas de contingencia sobre la nueva metodologia
 
 ```{r}
-11424554+2663366+2027451
+tabla_matp <-xtabs(dataset_pobreza_2006$EXPC~pobreza_MN, data = dataset_pobreza_2006)
+
 ```
 
-Pobres extremos
-
-```{r}
-2027451*100/16115371
-```
-
-Pobres
-
-```{r}
-2663366*100/16115371
-```
-
-Pobres extremos + Pobres
-
-```{r}
-12.58085+16.52687
-```
-
-
-
-# Cálculo del porcentaje de pobreza
-
-Aplicamos una tabla de contingencia:
+## ttcc bajo la nueva metodología
 
 ```{r}
 tabla_matp <-xtabs(dataset_pobreza_2006$EXPC~COMUNA+pobreza_MN, data = dataset_pobreza_2006)
 tabla_matp <- as.data.frame(tabla_matp)
 aaa <- split(tabla_matp, factor(sort(rank(row.names(tabla_matp))%%3)))
-```
 
-
-
-```{r}
 pobreza_extrema_en_el_2006 <- as.data.frame(aaa[1])
 pobreza_no_extrema_en_el_2006 <- as.data.frame(aaa[2])
 no_pobreza_en_el_2006 <- as.data.frame(aaa[3])
 
 pobreza_por_comuna_2006 <- cbind(pobreza_extrema_en_el_2006,pobreza_no_extrema_en_el_2006,no_pobreza_en_el_2006)
-```
 
-
-```{r}
 pobreza_por_comuna_2006 <- pobreza_por_comuna_2006[,-c(2,4,5,7,8)]
-pobreza_por_comuna_2006
-```
 
-
-```{r}
 names(pobreza_por_comuna_2006)[1] <- 'Comuna'
 names(pobreza_por_comuna_2006)[2] <- 'Pobres extremos'
 names(pobreza_por_comuna_2006)[3] <- 'Pobres no extremos'
 names(pobreza_por_comuna_2006)[4] <- 'No pobres'
 
+```
+
+Agreguemos el porcentaje de pobreza segun la nueva metodologia:
+
+```{r}
 pobreza_por_comuna_2006$porcentaje_de_pobreza <- ((pobreza_por_comuna_2006[,2]+pobreza_por_comuna_2006[,3])*100)/(pobreza_por_comuna_2006[,2]+pobreza_por_comuna_2006[,3]+pobreza_por_comuna_2006[,4])
 pobreza_por_comuna_2006$año <- "2006"
+
+cod_com <- readRDS("C:/Users/chris/Desktop/archivos grandes/codigos_comunales_2006-2020.rds") 
+pobreza_por_comuna_2006 <- merge(pobreza_por_comuna_2006, cod_com, by="Comuna")
+
 pobreza_por_comuna_2006
 ```
 
+
 ```{r}
-writexl::write_xlsx(pobreza_por_comuna_2006,"pobreza_por_comuna_2006.xlsx")
-saveRDS(pobreza_por_comuna_2006, "pobreza_por_comuna_2006.rds")
+writexl::write_xlsx(pobreza_por_comuna_2006,"porcentaje_de_pobreza_por_comuna_xlsx/pobreza_por_comuna_2006.xlsx")
+saveRDS(pobreza_por_comuna_2006, "porcentaje_de_pobreza_por_comuna_rds/pobreza_por_comuna_2006.rds")
 ```
 
-
-
-
-########################################################################################
-########################################################################################
-########################################################################################
-
-
+<span style="color:gray"> Se comienza a aplicar la nueva metodología </span>
 
 # 2009
 
-## Casen 2009 nueva metodología
-
-Desde http://observatorio.ministeriodesarrollosocial.gob.cl/encuesta-casen-2009 leemos la Casen con la nueva metodología (en adelante nm) de 2009 llamada "Base de datos Complementaria de Ingresos Nueva Metodología Casen 2009 SPSS" y la comparemos con la Casen original aplicada ese año:
-
-Base de datos Complementaria de Ingresos Nueva Metodología Casen 2009:
-
 ```{r, message=FALSE, warning=FALSE}
 dataset_09_nm <- read.spss("C:/Users/chris/Desktop/archivos grandes/Ingresos MN 2009.sav", to.data.frame = TRUE)
-head(dataset_09_nm,5)
+
+
+
 ```
-
-Podemos ver que la "Base de datos Complementaria de Ingresos Nueva Metodología Casen 2009" es un subset de la Casen original que da cuenta sólo de los ingresos de los encuestados, su pertenencia a los deciles por ingresos y su clasificación dentro de las categorías de pobreza (pobreza_MN).
-
-Extraigamos sólo las columnas que nos son relevantes pra nuestros propósitos actuales:
 
 ```{r, message=FALSE, warning=FALSE}
 dataset_09_nm_relevante <- dataset_09_nm[,c(1,2,3,4,5)]
-head(dataset_09_nm_relevante,5)
+
 ```
-
-Nos encontramos con la ausencia de una clave que nos permita unir ésta data con la Casen tradicional y así obtener entre otras cosas el factor de expansión.
-
-```{r}
-unique(dataset_09_nm_relevante$pobreza_MN)
-```
-
-Cuantos NA existen en la columna pobreza_MN?
-
-```{r}
-sum(is.na(dataset_09_nm_relevante$pobreza_MN))
-```
-
-Creación de una clave y limpieza de campos irrelevantes
-
-Para ello, unimos las columnas seg, f y o para crear la clave y luego nos deshacemos de ellas.
-
-SEGMENTO        Segmento
-IDVIV
-HOGAR           Identificación del hogar
-O               Número de orden de la persona dentro del hogar      
 
 ```{r}
 # Construimos la clave:
 dataset_09_nm_relevante$clave <- paste0(dataset_09_nm_relevante$SEGMENTO,  dataset_09_nm_relevante$IDVIV,  dataset_09_nm_relevante$HOGAR, dataset_09_nm_relevante$O, sep = "")
-dataset_09_nm_relevante
-```
 
-
-```{r}
-# Construimos la clave:
-dataset_09_nm_relevante$clave <- paste0(dataset_09_nm_relevante$SEGMENTO,  dataset_09_nm_relevante$IDVIV,  dataset_09_nm_relevante$HOGAR, dataset_09_nm_relevante$O, sep = "")
-dataset_09_nm_relevante
-```
-
-
-```{r}
 # Nos deshacemos de las que la construyen:
-dataset_09_nm_relevante_limpia <- dataset_09_nm_relevante[,-c(1:4)]
-dataset_09_nm_relevante_limpia
+dataset_09_nm_relevante <- dataset_09_nm_relevante[,-c(1:4)]
+dataset_09_nm_relevante_limpia <- dataset_09_nm_relevante
+
 ```
 
-# Casen 2009 vieja metodología
-
-Leamos la Casen 2009 aplicada ese año rescatando sólo las columnas que nos importan:
-
 ```{r}
-# dataset_09
 dataset_09_relevante <- dataset_09[,c(1:5,16,303)]
-dataset_09_relevante
+
 ```
-
-Cuantos NA existen en la columna CORTE?
-
-```{r}
-sum(is.na(dataset_09_relevante$CORTE))
-```  
-
-
-Realizamos el mismo procedimiento anterior de construcción de claves y eliminación de columna sin utilidad:
 
 ```{r}
 # Construímos una clave
 dataset_09_relevante$clave <- paste0(dataset_09_relevante$SEGMENTO,  dataset_09_relevante$IDVIV,  dataset_09_relevante$HOGAR, dataset_09_relevante$O, sep = "")
-dataset_09_relevante
-```
 
-
-```{r}
 # nos deshacemos de las columnas que ya no prestan utilidad:
 dataset_09_relevante_limpia <- dataset_09_relevante[,-c(2:5)]
-dataset_09_relevante_limpia
-```
 
-# Las unimos
+```
 
 ```{r}
 dataset_2009 <- merge(dataset_09_relevante_limpia,dataset_09_nm_relevante_limpia,by="clave")
 dataset_pobreza_2009 <- dataset_2009
-dataset_pobreza_2009
-```
 
-Aplicamos una tabla de contingencia:
+```
 
 ```{r}
 tabla_matp <-xtabs(dataset_pobreza_2009$EXPC~pobreza_MN, data = dataset_pobreza_2009)
-tabla_matp
+
 ```
 
-Población total de Chile al 2009:
-
-```{r}
-1630581+2555810 +12398130
-```
-
-Pobres extremos
-
-```{r}
-1630581*100/16584521
-```
-
-Pobres
-
-```{r}
-2555810*100/16584521
-```
-
-Pobres extremos + Pobres
-
-```{r}
-9.831945+15.41082
-```
-
-# Cálculo del porcentaje de pobreza
-
-Aplicamos una tabla de contingencia:
 
 ```{r}
 tabla_matp <-xtabs(dataset_pobreza_2009$EXPC~COMUNA+pobreza_MN, data = dataset_pobreza_2009)
@@ -420,163 +274,84 @@ pobreza_no_extrema_en_el_2009 <- as.data.frame(aaa[2])
 no_pobreza_en_el_2009 <- as.data.frame(aaa[3])
 
 pobreza_por_comuna_2009 <- cbind(pobreza_extrema_en_el_2009,pobreza_no_extrema_en_el_2009,no_pobreza_en_el_2009)
+
 pobreza_por_comuna_2009 <- pobreza_por_comuna_2009[,-c(2,4,5,7,8)]
+
 names(pobreza_por_comuna_2009)[1] <- 'Comuna'
 names(pobreza_por_comuna_2009)[2] <- 'Pobres extremos'
 names(pobreza_por_comuna_2009)[3] <- 'Pobres no extremos'
 names(pobreza_por_comuna_2009)[4] <- 'No pobres'
+
 ```
 
+Agreguemos el porcentaje de pobreza segun la nueva metodologia:
 
 ```{r}
 pobreza_por_comuna_2009$porcentaje_de_pobreza <- ((pobreza_por_comuna_2009[,2]+pobreza_por_comuna_2009[,3])*100)/(pobreza_por_comuna_2009[,2]+pobreza_por_comuna_2009[,3]+pobreza_por_comuna_2009[,4])
 pobreza_por_comuna_2009$año <- "2009"
+
+cod_com <- readRDS("C:/Users/chris/Desktop/archivos grandes/codigos_comunales_2006-2020.rds")
+
+cod_com <- readRDS("C:/Users/chris/Desktop/archivos grandes/codigos_comunales_2006-2020.rds") 
+pobreza_por_comuna_2009 <- merge(pobreza_por_comuna_2009, cod_com, by="Comuna")
+
 pobreza_por_comuna_2009
 ```
+
 ```{r}
-writexl::write_xlsx(pobreza_por_comuna_2009,"pobreza_por_comuna_2009.xlsx")
-saveRDS(pobreza_por_comuna_2009, "pobreza_por_comuna_2009.rds")
+writexl::write_xlsx(pobreza_por_comuna_2009,"porcentaje_de_pobreza_por_comuna_xlsx/pobreza_por_comuna_2009.xlsx")
+saveRDS(pobreza_por_comuna_2009, "porcentaje_de_pobreza_por_comuna_rds/pobreza_por_comuna_2009.rds")
 ```
 
-########################################################################################
-########################################################################################
-########################################################################################
 
+<span style="color:gray"> Se comienza a aplicar la nueva metodología </span>
 
-
-## 2011 
-
-folio
-o
-
-## Casen 2011 nueva metodología
-
-Desde http://observatorio.ministeriodesarrollosocial.gob.cl/encuesta-casen-2011 leemos la Casen con la nueva metodología (en adelante nm) de 2011 llamada "Base de datos Complementaria de Ingresos Nueva Metodología Casen 2011 SPSS" y la comparemos con la Casen original aplicada ese año:
-
-Base de datos Complementaria de Ingresos Nueva Metodología Casen 2011:
+# 2011
 
 ```{r, message=FALSE, warning=FALSE}
 dataset_11_nm <- read.spss("C:/Users/chris/Desktop/archivos grandes/Ingresos MN 2011.sav", to.data.frame = TRUE)
-head(dataset_11_nm,5)
+
 ```
-
-Podemos ver que la "Base de datos Complementaria de Ingresos Nueva Metodología Casen 2011" es un subset de la Casen original que da cuenta sólo de los ingresos de los encuestados, su pertenencia a los deciles por ingresos y su clasificación dentro de las categorías de pobreza (pobreza_MN).
-
-Extraigamos sólo las columnas que nos son relevantes pra nuestros propósitos actuales:
 
 ```{r, message=FALSE, warning=FALSE}
 dataset_11_nm_relevante <- dataset_11_nm[,c(1,2,3)]
-head(dataset_11_nm_relevante,5)
+
 ```
-
-Nos encontramos con la ausencia de una clave que nos permita unir ésta data con la Casen tradicional y así obtener entre otras cosas el factor de expansión.
-
-```{r}
-unique(dataset_11_nm_relevante$pobreza_MN)
-```
-
-Cuantos NA existen en la columna pobreza_MN?
-
-```{r}
-sum(is.na(dataset_11_nm_relevante$pobreza_MN))
-```
-
-Creación de una clave y limpieza de campos irrelevantes
-
-Para ello, unimos las columnas folio y o para crear la clave y luego nos deshacemos de ellas.
-
-folio
-o           Número de orden de la persona dentro del hogar      
 
 ```{r}
 # Construimos la clave:
-dataset_11_nm_relevante$clave <- paste0(dataset_11_nm_relevante$folio,  dataset_11_nm_relevante$o, sep = "")
-dataset_11_nm_relevante
-```
+dataset_11_nm_relevante$clave <- paste0(dataset_11_nm_relevante$folio, dataset_11_nm_relevante$o, sep = "")
 
-```{r}
 # Nos deshacemos de las que la construyen:
-dataset_11_nm_relevante_limpia <- dataset_11_nm_relevante[,-c(1:2)]
-dataset_11_nm_relevante_limpia
+dataset_11_nm_relevante <- dataset_11_nm_relevante[,-c(1:2)]
+dataset_11_nm_relevante_limpia <- dataset_11_nm_relevante
+
 ```
 
-# Casen 2011 vieja metodología
-
-Leamos la Casen 2011 aplicada ese año rescatando sólo las columnas que nos importan:
-
 ```{r}
-# dataset_11
 dataset_11_relevante <- dataset_11[,c(1,3,4,11,321)]
-dataset_11_relevante
+
 ```
-
-Cuantos NA existen en la columna corte?
-
-```{r}
-sum(is.na(dataset_11_relevante$corte))
-```  
-
-
-Realizamos el mismo procedimiento anterior de construcción de claves y eliminación de campos sin utilidad:
 
 ```{r}
 # Construímos una clave
-dataset_11_relevante$clave <- paste0(dataset_11_relevante$folio,  dataset_11_relevante$o, sep = "")
-dataset_11_relevante
-```
+dataset_11_relevante$clave <- paste0( dataset_11_relevante$folio, dataset_11_relevante$o, sep = "")
 
-
-```{r}
 # nos deshacemos de las columnas que ya no prestan utilidad:
-dataset_11_relevante_limpia <- dataset_11_relevante[,-c(2:3)]
-dataset_11_relevante_limpia
-```
+dataset_11_relevante_limpia <- dataset_11_relevante[,-c(2,3)]
 
-# Las unimos
+```
 
 ```{r}
 dataset_2011 <- merge(dataset_11_relevante_limpia,dataset_11_nm_relevante_limpia,by="clave")
 dataset_pobreza_2011 <- dataset_2011
-dataset_pobreza_2011
-```
 
-Aplicamos una tabla de contingencia:
+```
 
 ```{r}
 tabla_matp <-xtabs(dataset_pobreza_2011$expc_full~pobreza_MN, data = dataset_pobreza_2011)
-tabla_matp
+
 ```
-
-Población total de Chile al 2011:
-
-```{r}
-  910164        +    1598941       +     8713093 
-```
-
-Pobres extremos
-
-```{r}
-910164*100/11222198
-```
-
-Pobres
-
-```{r}
-1598941*100/11222198
-```
-
-Pobres extremos + Pobres
-
-```{r}
-8.11039+14.24802
-```
-
-
-
-
-# Cálculo del porcentaje de pobreza
-
-Aplicamos una tabla de contingencia:
 
 ```{r}
 tabla_matp <-xtabs(dataset_pobreza_2011$expc_full~comuna+pobreza_MN, data = dataset_pobreza_2011)
@@ -588,81 +363,49 @@ pobreza_no_extrema_en_el_2011 <- as.data.frame(aaa[2])
 no_pobreza_en_el_2011 <- as.data.frame(aaa[3])
 
 pobreza_por_comuna_2011 <- cbind(pobreza_extrema_en_el_2011,pobreza_no_extrema_en_el_2011,no_pobreza_en_el_2011)
+
 pobreza_por_comuna_2011 <- pobreza_por_comuna_2011[,-c(2,4,5,7,8)]
+
 names(pobreza_por_comuna_2011)[1] <- 'Comuna'
 names(pobreza_por_comuna_2011)[2] <- 'Pobres extremos'
 names(pobreza_por_comuna_2011)[3] <- 'Pobres no extremos'
 names(pobreza_por_comuna_2011)[4] <- 'No pobres'
+
 ```
 
+Agreguemos el porcentaje de pobreza segun la nueva metodologia:
 
 ```{r}
 pobreza_por_comuna_2011$porcentaje_de_pobreza <- ((pobreza_por_comuna_2011[,2]+pobreza_por_comuna_2011[,3])*100)/(pobreza_por_comuna_2011[,2]+pobreza_por_comuna_2011[,3]+pobreza_por_comuna_2011[,4])
 pobreza_por_comuna_2011$año <- "2011"
-pobreza_por_comuna_2011
+
+cod_com <- readRDS("C:/Users/chris/Desktop/archivos grandes/codigos_comunales_2006-2020.rds") 
+pobreza_por_comuna_2011 <- merge(pobreza_por_comuna_2011, cod_com, by="Comuna")
+
 ```
 
 ```{r}
-writexl::write_xlsx(pobreza_por_comuna_2011,"pobreza_por_comuna_2011.xlsx")
-saveRDS(pobreza_por_comuna_2011, "pobreza_por_comuna_2011.rds")
+writexl::write_xlsx(pobreza_por_comuna_2011,"porcentaje_de_pobreza_por_comuna_xlsx/pobreza_por_comuna_2011.xlsx")
+saveRDS(pobreza_por_comuna_2011, "porcentaje_de_pobreza_por_comuna_rds/pobreza_por_comuna_2011.rds")
 ```
 
-
-
-########################################################################################
-########################################################################################
-########################################################################################
-
-2013 
-
 <span style="color:red"> Se comienza a aplicar la nueva metodología </span>
+
+# 2013 
 
 Leamos la Casen 2013 aplicada ese año rescatando sólo las columnas que nos importan:
 
 ```{r}
 # dataset_13
-dataset_13_relevante <- dataset_13[,c(1,2,3,578,583)]
-dataset_13_relevante
+dataset_13_relevante <- dataset_13[,c(1,578,583)]
+
 ```
-
-Cuantos NA existen en la columna pobreza_MN?
-
-```{r}
-sum(is.na(dataset_13_relevante$pobreza_MN))
-```  
 
 Aplicamos tablas de contingencia
 
 ```{r}
 tabla_matp <-xtabs(dataset_13_relevante$expc~pobreza_MN, data = dataset_13_relevante)
-tabla_matp
 ```
-
-Población total de Chile al 2013:
-
-```{r}
-14745682+776164+1696553 
-```
-
-Pobres extremos
-
-```{r}
-776164 *100/17218399
-```
-
-Pobres
-
-```{r}
-1696553*100/17218399
-```
-
-Pobres extremos + Pobres
-
-```{r}
-4.507759+9.85314
-```
-
-################################################################################
 
 # Cálculo del porcentaje de pobreza
 
@@ -672,9 +415,7 @@ Aplicamos una tabla de contingencia:
 tabla_matp <-xtabs(dataset_13_relevante$expc~comuna+pobreza_MN, data = dataset_13_relevante)
 tabla_matp <- as.data.frame(tabla_matp)
 aaa <- split(tabla_matp, factor(sort(rank(row.names(tabla_matp))%%3)))
-```
 
-```{r}
 no_pobreza_en_el_2013 <- as.data.frame(aaa[1])
 pobreza_extrema_en_el_2013 <- as.data.frame(aaa[2])
 pobreza_no_extrema_en_el_2013 <- as.data.frame(aaa[3])
@@ -685,74 +426,36 @@ names(pobreza_por_comuna_2013)[1] <- 'Comuna'
 names(pobreza_por_comuna_2013)[2] <- 'Pobres extremos'
 names(pobreza_por_comuna_2013)[3] <- 'Pobres no extremos'
 names(pobreza_por_comuna_2013)[4] <- 'No pobres'
-```
 
-```{r}
 pobreza_por_comuna_2013$porcentaje_de_pobreza <- ((pobreza_por_comuna_2013[,2]+pobreza_por_comuna_2013[,3])*100)/(pobreza_por_comuna_2013[,2]+pobreza_por_comuna_2013[,3]+pobreza_por_comuna_2013[,4])
 pobreza_por_comuna_2013$año <- "2013"
-pobreza_por_comuna_2013
+
+cod_com <- readRDS("C:/Users/chris/Desktop/archivos grandes/codigos_comunales_2006-2020.rds") 
+pobreza_por_comuna_2013 <- merge(pobreza_por_comuna_2013, cod_com, by="Comuna")
+
 ```
 
 ```{r}
-writexl::write_xlsx(pobreza_por_comuna_2013,"pobreza_por_comuna_2013.xlsx")
-saveRDS(pobreza_por_comuna_2013, "pobreza_por_comuna_2013.rds")
+writexl::write_xlsx(pobreza_por_comuna_2013,"porcentaje_de_pobreza_por_comuna_xlsx/pobreza_por_comuna_2013.xlsx")
+saveRDS(pobreza_por_comuna_2013, "porcentaje_de_pobreza_por_comuna_rds/pobreza_por_comuna_2013.rds")
 ```
 
-
-########################################################################################
-########################################################################################
-########################################################################################
-
-2015
-
-<span style="color:red"> Se comienza a aplicar la nueva metodología </span>
+# 2015
 
 Leamos la Casen 2015 aplicada ese año rescatando sólo las columnas que nos importan:
 
 ```{r}
 # dataset_15
-dataset_15_relevante <- dataset_15[,c(1,3,4,731,780)]
-dataset_15_relevante
+dataset_15_relevante <- dataset_15[,c(1,731,780)]
+
 ```
-
-Cuantos NA existen en la columna pobreza?
-
-```{r}
-sum(is.na(dataset_15_relevante$pobreza))
-```  
 
 Aplicamos tablas de contingencia
 
 ```{r}
 tabla_matp <-xtabs(dataset_15_relevante$expc_todas~pobreza, data = dataset_15_relevante)
-tabla_matp
+
 ```
-
-Población total de Chile al 2015:
-
-```{r}
- 15466212      +       616619        +    1407558 
-```
-
-Pobres extremos
-
-```{r}
-616619 *100/17490389
-```
-
-Pobres
-
-```{r}
-1407558*100/17490389
-```
-
-Pobres extremos + Pobres
-
-```{r}
-3.525473+8.047608
-```
-
-################################################################################
 
 # Cálculo del porcentaje de pobreza
 
@@ -762,9 +465,7 @@ Aplicamos una tabla de contingencia:
 tabla_matp <-xtabs(dataset_15_relevante$expc_todas~comuna+pobreza, data = dataset_15_relevante)
 tabla_matp <- as.data.frame(tabla_matp)
 aaa <- split(tabla_matp, factor(sort(rank(row.names(tabla_matp))%%3)))
-```
 
-```{r}
 no_pobreza_en_el_2015 <- as.data.frame(aaa[1])
 pobreza_extrema_en_el_2015 <- as.data.frame(aaa[2])
 pobreza_no_extrema_en_el_2015 <- as.data.frame(aaa[3])
@@ -775,74 +476,36 @@ names(pobreza_por_comuna_2015)[1] <- 'Comuna'
 names(pobreza_por_comuna_2015)[2] <- 'Pobres extremos'
 names(pobreza_por_comuna_2015)[3] <- 'Pobres no extremos'
 names(pobreza_por_comuna_2015)[4] <- 'No pobres'
-```
 
-```{r}
 pobreza_por_comuna_2015$porcentaje_de_pobreza <- ((pobreza_por_comuna_2015[,2]+pobreza_por_comuna_2015[,3])*100)/(pobreza_por_comuna_2015[,2]+pobreza_por_comuna_2015[,3]+pobreza_por_comuna_2015[,4])
 pobreza_por_comuna_2015$año <- "2015"
-pobreza_por_comuna_2015
+
+cod_com <- readRDS("C:/Users/chris/Desktop/archivos grandes/codigos_comunales_2006-2020.rds") 
+pobreza_por_comuna_2015 <- merge(pobreza_por_comuna_2015, cod_com, by="Comuna")
+
 ```
 
 ```{r}
-writexl::write_xlsx(pobreza_por_comuna_2015,"pobreza_por_comuna_2015.xlsx")
-saveRDS(pobreza_por_comuna_2015, "pobreza_por_comuna_2015.rds")
+writexl::write_xlsx(pobreza_por_comuna_2015,"porcentaje_de_pobreza_por_comuna_xlsx/pobreza_por_comuna_2015.xlsx")
+saveRDS(pobreza_por_comuna_2015, "porcentaje_de_pobreza_por_comuna_rds/pobreza_por_comuna_2015.rds")
 ```
 
-
-########################################################################################
-########################################################################################
-########################################################################################
-
-2017
-
-<span style="color:red"> Se comienza a aplicar la nueva metodología </span>
+# 2017
 
 Leamos la Casen 2017 aplicada ese año rescatando sólo las columnas que nos importan:
 
 ```{r}
 # dataset_17
-dataset_17_relevante <- dataset_17[,c(1,2,3,10,767)]
-dataset_17_relevante
+dataset_17_relevante <- dataset_17[,c(1,10,767)]
+
 ```
-
-Cuantos NA existen en la columna pobreza?
-
-```{r}
-sum(is.na(dataset_17_relevante$pobreza))
-```  
 
 Aplicamos tablas de contingencia
 
 ```{r}
 tabla_matp <-xtabs(dataset_17_relevante$expc~pobreza, data = dataset_17_relevante)
-tabla_matp
+
 ```
-
-Población total de Chile al 2015:
-
-```{r}
- 16241747       +      407536      +      1099747 
-```
-
-Pobres extremos
-
-```{r}
-407536 *100/17749030
-```
-
-Pobres
-
-```{r}
-1099747 *100/17749030
-```
-
-Pobres extremos + Pobres
-
-```{r}
-2.296103 + 6.196096
-```
-
-################################################################################
 
 # Cálculo del porcentaje de pobreza
 
@@ -852,9 +515,7 @@ Aplicamos una tabla de contingencia:
 tabla_matp <-xtabs(dataset_17_relevante$expc~comuna+pobreza, data = dataset_17_relevante)
 tabla_matp <- as.data.frame(tabla_matp)
 aaa <- split(tabla_matp, factor(sort(rank(row.names(tabla_matp))%%3)))
-```
 
-```{r}
 no_pobreza_en_el_2017 <- as.data.frame(aaa[1])
 pobreza_extrema_en_el_2017 <- as.data.frame(aaa[2])
 pobreza_no_extrema_en_el_2017 <- as.data.frame(aaa[3])
@@ -865,74 +526,36 @@ names(pobreza_por_comuna_2017)[1] <- 'Comuna'
 names(pobreza_por_comuna_2017)[2] <- 'Pobres extremos'
 names(pobreza_por_comuna_2017)[3] <- 'Pobres no extremos'
 names(pobreza_por_comuna_2017)[4] <- 'No pobres'
-```
 
-```{r}
 pobreza_por_comuna_2017$porcentaje_de_pobreza <- ((pobreza_por_comuna_2017[,2]+pobreza_por_comuna_2017[,3])*100)/(pobreza_por_comuna_2017[,2]+pobreza_por_comuna_2017[,3]+pobreza_por_comuna_2017[,4])
 pobreza_por_comuna_2017$año <- "2017"
-pobreza_por_comuna_2017
+
+cod_com <- readRDS("C:/Users/chris/Desktop/archivos grandes/codigos_comunales_2006-2020.rds") 
+pobreza_por_comuna_2017 <- merge(pobreza_por_comuna_2017, cod_com, by="Comuna")
+
 ```
 
 ```{r}
-writexl::write_xlsx(pobreza_por_comuna_2017,"pobreza_por_comuna_2017.xlsx")
-saveRDS(pobreza_por_comuna_2017, "pobreza_por_comuna_2017.rds")
+writexl::write_xlsx(pobreza_por_comuna_2017,"porcentaje_de_pobreza_por_comuna_xlsx/pobreza_por_comuna_2017.xlsx")
+saveRDS(pobreza_por_comuna_2017, "porcentaje_de_pobreza_por_comuna_rds/pobreza_por_comuna_2017.rds")
 ```
 
-
-########################################################################################
-########################################################################################
-########################################################################################
-
-2020
-
-<span style="color:red"> Se comienza a aplicar la nueva metodología </span>
+# 2020
 
 Leamos la Casen 2020 aplicada ese año rescatando sólo las columnas que nos importan:
 
 ```{r}
 # dataset_20
-dataset_20_relevante <- dataset_20[,c(7,1,2,17,588)]
-dataset_20_relevante
+dataset_20_relevante <- dataset_20[,c(7,17,588)]
+
 ```
-
-Cuantos NA existen en la columna pobreza?
-
-```{r}
-sum(is.na(dataset_20_relevante$pobreza))
-```  
 
 Aplicamos tablas de contingencia
 
 ```{r}
 tabla_matp <-xtabs(dataset_20_relevante$expc~pobreza, data = dataset_20_relevante)
-tabla_matp
+
 ```
-
-Población total de Chile al 2015:
-
-```{r}
- 17360850      +       848169      +      1278243 
-```
-
-Pobres extremos
-
-```{r}
-848169*100/19487262
-```
-
-Pobres
-
-```{r}
-1278243  *100/19487262
-```
-
-Pobres extremos + Pobres
-
-```{r}
-4.352428 + 6.559377
-```
-
-################################################################################
 
 # Cálculo del porcentaje de pobreza
 
@@ -942,9 +565,7 @@ Aplicamos una tabla de contingencia:
 tabla_matp <-xtabs(dataset_20_relevante$expc~comuna+pobreza, data = dataset_20_relevante)
 tabla_matp <- as.data.frame(tabla_matp)
 aaa <- split(tabla_matp, factor(sort(rank(row.names(tabla_matp))%%3)))
-```
 
-```{r}
 no_pobreza_en_el_2020 <- as.data.frame(aaa[1])
 pobreza_extrema_en_el_2020 <- as.data.frame(aaa[2])
 pobreza_no_extrema_en_el_2020 <- as.data.frame(aaa[3])
@@ -955,76 +576,136 @@ names(pobreza_por_comuna_2020)[1] <- 'Comuna'
 names(pobreza_por_comuna_2020)[2] <- 'Pobres extremos'
 names(pobreza_por_comuna_2020)[3] <- 'Pobres no extremos'
 names(pobreza_por_comuna_2020)[4] <- 'No pobres'
-```
 
-```{r}
 pobreza_por_comuna_2020$porcentaje_de_pobreza <- ((pobreza_por_comuna_2020[,2]+pobreza_por_comuna_2020[,3])*100)/(pobreza_por_comuna_2020[,2]+pobreza_por_comuna_2020[,3]+pobreza_por_comuna_2020[,4])
 pobreza_por_comuna_2020$año <- "2020"
-pobreza_por_comuna_2020
-```
 
-```{r}
-writexl::write_xlsx(pobreza_por_comuna_2020,"pobreza_por_comuna_2020.xlsx")
-saveRDS(pobreza_por_comuna_2020, "pobreza_por_comuna_2020.rds")
-```
-
-
-
-
-
-
- 
-# <span style="color:black">Aplicamos la interpolación </span>
-
-```{r}
-# tabla_pobreza <- tabla_madre[,c(1,2,3,5,8,11,14,17,20,23)]
-# tabla_pobreza$p2007 <- NA
-# tabla_pobreza$p2008 <- NA
-# tabla_pobreza$p2010 <- NA
-# tabla_pobreza$p2012 <- NA
-# tabla_pobreza$p2014 <- NA
-# tabla_pobreza$p2016 <- NA
-# tabla_pobreza$p2018 <- NA
-# tabla_pobreza$p2019 <- NA
-# tabla_pobreza$p2021 <- NA
-# tabla_pobreza <- tabla_pobreza[,c("Comuna","Código","Pobreza","porcentaje_pobreza1","p2007","p2008","porcentaje_pobreza2","p2010","porcentaje_pobreza3","p2012","porcentaje_pobreza4","p2014","porcentaje_pobreza5","p2016","porcentaje_pobreza6","p2018","p2019","porcentaje_pobreza7","p2021")]
-# colnames(tabla_pobreza) <- c("Comuna","Código","Pobreza","p2006","p2007","p2008","p2009","p2010","p2011","p2012","p2013","p2014","p2015","p2016","p2017","p2018","p2019","p2020","p2021")
-```
-```{r}
-# tabla_pobreza
+cod_com <- readRDS("C:/Users/chris/Desktop/archivos grandes/codigos_comunales_2006-2020.rds") 
+pobreza_por_comuna_2020 <- merge(pobreza_por_comuna_2020, cod_com, by="Comuna")
 ```
 
 
 ```{r}
-# receptaculo2 <- data.frame()
-# for (n in 1:896) {
-#   calculado <- na.approx(c(tabla_pobreza[n,c(4:19)])) #<<<------------  Codigo de interpolacion
-#   # calculado <- as.data.frame(calculado)
-#   receptaculo2 <- rbind(receptaculo2,calculado)
-# }
-# colnames(receptaculo2) <- c("p2006","p2007","p2008","p2009","p2010","p2011","p2012","p2013","p2014","p2015","p2016","p2017","p2018","p2019","p2020")
+writexl::write_xlsx(pobreza_por_comuna_2020,"porcentaje_de_pobreza_por_comuna_xlsx/pobreza_por_comuna_2020.xlsx")
+saveRDS(pobreza_por_comuna_2020, "porcentaje_de_pobreza_por_comuna_rds/pobreza_por_comuna_2020.rds")
+```
+
+```{r}
+Union_pobreza_total = rbind(pobreza_por_comuna_2006, pobreza_por_comuna_2009,pobreza_por_comuna_2011,pobreza_por_comuna_2013,pobreza_por_comuna_2015,pobreza_por_comuna_2017,pobreza_por_comuna_2020)
+Union_pobreza_total
+```
+
+```{r}
+writexl::write_xlsx(Union_pobreza_total,"porcentaje_de_pobreza_por_comuna_xlsx/Union_pobreza_total.xlsx")
+saveRDS(Union_pobreza_total, "porcentaje_de_pobreza_por_comuna_rds/Union_pobreza_total.rds")
+```
+
+# <span style="color:red">Aplicamos la interpolación </span>
+
+```{r}
+Union_pobreza_total
+```
+
+```{r, warning=FALSE}
+library(data.table)
+setDT(Union_pobreza_total)
+tabla_01_a_interpolar <- dcast(Union_pobreza_total, Comuna ~ año, value.var = "porcentaje_de_pobreza")
+tabla_01_a_interpolar
+```
+
+```{r}
+completerecords <- tabla_01_a_interpolar
+completerecords <- na.omit(tabla_01_a_interpolar)
+completerecords
+```
+```{r}
+completerecords$`2007` <- NA
+completerecords$`2008` <- NA
+completerecords$`2010` <- NA
+completerecords$`2012` <- NA
+completerecords$`2014` <- NA
+completerecords$`2016` <- NA
+completerecords$`2018` <- NA
+completerecords$`2019` <- NA
+
+completerecords$`2007` = as.double(completerecords$`2007`)
+completerecords$`2008` = as.double(completerecords$`2008`)
+completerecords$`2010` = as.double(completerecords$`2010`)
+completerecords$`2012` = as.double(completerecords$`2012`)
+completerecords$`2014` = as.double(completerecords$`2014`)
+completerecords$`2016` = as.double(completerecords$`2016`)
+completerecords$`2018` = as.double(completerecords$`2018`)
+completerecords$`2019` = as.double(completerecords$`2019`)
+
+tabla_01_a_interpolar2 <- completerecords[, c(2, 9,10,3,11,4,12,5,13,6,14,7,15,16,8)]
+comuna <- completerecords[,c(1:2)]
+```
+
+```{r}
+tabla_01_a_interpolar2
+```
+
+```{r}
+comuna
+```
+
+```{r}
+exp2 <- tabla_01_a_interpolar2
+exp2
+```
+
+```{r}
+recep <- tibble()
+for(i in 1:nrow(exp2)){
+   exp45 <- as.numeric(exp2[i,c(1:15)]) 
+   inter <- na.approx(exp45)
+   recep <- rbind(recep, inter)
+}
 ```
 
 
 ```{r}
-# library(scales)
-# tabla_final <- cbind(tabla_pobreza[,c(1,2,3)],receptaculo2)
-# tabla_madre <- rbind(tb1,tb2,tb3)
-# datatable(tabla_final, extensions = 'Buttons', escape = FALSE, rownames = FALSE,
-#           options = list(dom = 'Bfrtip',
-#           buttons = list('colvis', list(extend = 'collection',
-#           buttons = list(
-#           list(extend='copy'),
-#           list(extend='excel',
-#             filename = 'hitStats'),
-#           list(extend='pdf',
-#             filename= 'hitStats')),
-#           
-#           text = 'Download')), scrollX = TRUE))%>%
-#     formatRound(c("p2006","p2007","p2008","p2009","p2010","p2011","p2012","p2013","p2014","p2015","p2016","p2017","p2018","p2019","p2020"), mark = "", digits = 2)%>%
-#     formatPercentage(   c("p2006","p2007","p2008","p2009","p2010","p2011","p2012","p2013","p2014","p2015","p2016","p2017","p2018","p2019","p2020"))
+recep
 ```
- 
+```{r}
+colnames(recep) <- c("2006","2007","2008","2009","2010","2011","2012","2013","2014","2015","2016","2017","2018","2019","2020")
+recep
+```
+
+```{r}
+pobreza_interpolada <- merge(comuna ,recep, by = c("2006"))
+pobreza_interpolada
+```
+```{r}
+pobreza_interpolada <- pobreza_interpolada[, c(2,1,3,4,5,6,7,8,9,10,11,12,13,14,15,16)]
+pobreza_interpolada 
+```
+```{r}
+cod_com <- readRDS("C:/Users/chris/Desktop/archivos grandes/codigos_comunales_2006-2020.rds") 
+Union_pobreza_total = merge(pobreza_interpolada , cod_com, by = "Comuna")
+```
+
+```{r}
+writexl::write_xlsx(Union_pobreza_total,"porcentaje_de_pobreza_por_comuna_xlsx/pobreza_total_interpolada.xlsx")
+saveRDS(Union_pobreza_total, "porcentaje_de_pobreza_por_comuna_rds/pobreza_total_interpolada.rds")
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
